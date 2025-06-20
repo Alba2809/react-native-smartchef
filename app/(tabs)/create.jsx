@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,10 +15,48 @@ import COLORS from "../../constants/colors";
 import styles from "../../assets/styles/create.styles";
 import CategoryPicker from "../../components/CategoryPicker";
 import ImagePickerComponent from "../../components/ImagePickerComponent";
-import DropDownPicker from "react-native-dropdown-picker"
+import BottomSheetManager from "../../components/BottomSheetManager";
 import IngredientInput from "../../components/IngredientInput";
+import IngredientsList from "../../components/IngredientsList";
+
+const BottomSheetViews = {
+  CATEGORIES: "CATEGORIES",
+  INGREDIENTS: "INGREDIENTS",
+  NEW_INGREDIENT: "NEW_INGREDIENT",
+};
+
+const bottomSheetConfig = {
+  [BottomSheetViews.CATEGORIES]: {
+    title: "Selecciona las categorías",
+    snapPoints: ["40%"],
+    content: (props) => (
+      <CategoryPicker
+        handleCategory={props.handleCategory}
+        categoriesSelected={props.categories}
+      />
+    ),
+  },
+  [BottomSheetViews.INGREDIENTS]: {
+    title: "Ingredientes ingresados",
+    snapPoints: ["70%"],
+    content: (props) => (
+      <IngredientsList
+        ingredients={props.ingredients}
+        handleRemoveIngredient={props.handleRemoveIngredient}
+      />
+    ),
+  },
+  [BottomSheetViews.NEW_INGREDIENT]: {
+    title: "Nuevo ingrediente",
+    snapPoints: ["40%"],
+    content: (props) => (
+      <IngredientInput handleAddIngredient={props.handleAddIngredient} />
+    ),
+  },
+};
 
 export default function create() {
+  /* Form State Variables */
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -26,17 +65,30 @@ export default function create() {
   const [ingredients, setIngredients] = useState([]);
   const [steps, setSteps] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  /* Test data */
   const [selected, setSelected] = useState(null);
   const [items, setItems] = useState([
-    { label: 'Gramos', value: 'gr' },
-    { label: 'Litros', value: 'ltr' },
-    { label: 'Piezas', value: 'piezas' },
+    { label: "Gramos", value: "gr" },
+    { label: "Litros", value: "ltr" },
+    { label: "Piezas", value: "piezas" },
   ]);
   const [open, setOpen] = useState(false);
+
+  /* Bottom sheet manager */
+  const bottomSheetRef = useRef(null);
+  const snapPoints = ["40%", "70%"];
+  const [bsView, setBsView] = useState(BottomSheetViews.CATEGORIES);
+  const currentBsConfig = bottomSheetConfig[bsView];
 
   const router = useRouter();
 
   const handleSubmit = async () => {};
+
+  const handlePresentModalPress = useCallback((keyView) => {
+    setBsView(keyView);
+    bottomSheetRef.current?.present();
+  }, []);
 
   const handleCategory = (category) => {
     /* Add category to categories array, if it doesn't exist, otherwise remove it */
@@ -47,11 +99,20 @@ export default function create() {
     }
   };
 
-  const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: "", amount: 0, unit: null, open: false }]);
+  const handleAddIngredient = (newIngredient) => {
+    setIngredients((prev) => [...prev, newIngredient]);
+    ToastAndroid.showWithGravity(
+      "Ingrediente agregado",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
   };
 
-  console.log(ingredients)
+  const handleRemoveIngredient = (index) => {
+    const newIngredients = ingredients.filter((_, i) => i !== index);
+
+    setIngredients(newIngredients);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -108,10 +169,16 @@ export default function create() {
               />
             </View>
 
-            {/* Categories list */}
+            {/* Categories bottom sheet */}
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Categorías</Text>
-              {CategoryPicker(handleCategory, categories)}
+              <TouchableOpacity
+                style={styles.buttonSecondary}
+                onPress={() =>
+                  handlePresentModalPress(BottomSheetViews.CATEGORIES)
+                }
+              >
+                <Text style={styles.buttonText}>Seleccionar categorías</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Imagen */}
@@ -128,32 +195,40 @@ export default function create() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Ingredientes</Text>
               <TouchableOpacity
-                style={styles.button}
-                onPress={handleAddIngredient}
+                style={{ ...styles.buttonSecondary, marginBottom: 5 }}
+                onPress={() =>
+                  handlePresentModalPress(BottomSheetViews.NEW_INGREDIENT)
+                }
               >
                 <Text style={styles.buttonText}>Agregar ingrediente</Text>
               </TouchableOpacity>
-              <View style={styles.ingredientsContainer}>
-                <IngredientInput
-                  ingredients={ingredients}
-                  setIngredients={setIngredients}
-                />
-              </View>
+
+              <TouchableOpacity
+                style={styles.buttonSecondary}
+                onPress={() =>
+                  handlePresentModalPress(BottomSheetViews.INGREDIENTS)
+                }
+              >
+                <Text style={styles.buttonText}>Ver ingredientes</Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Picker */}
-            {/* <View style={{ flex: 1, padding: 20 }}>
-              <DropDownPicker
-                open={open}
-                setOpen={setOpen}
-                items={items}
-                value={selected}
-                setValue={setSelected}
-                setItems={setItems}
-                placeholder="Selecciona una categoría"
-                listMode="SCROLLVIEW"
-               />
-            </View> */}
+            {/* Bottom sheet manager */}
+            {currentBsConfig && (
+              <BottomSheetManager
+                bottomSheetRef={bottomSheetRef}
+                title={currentBsConfig.title}
+                snapPoints={currentBsConfig.snapPoints}
+              >
+                {currentBsConfig.content({
+                  handleCategory,
+                  categories,
+                  ingredients,
+                  handleAddIngredient,
+                  handleRemoveIngredient
+                })}
+              </BottomSheetManager>
+            )}
           </View>
         </View>
       </ScrollView>

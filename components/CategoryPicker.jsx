@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import styles from "../assets/styles/create.styles";
 
-export default function CategoryPicker(handleCategory, categoriesSelected) {
+export default function CategoryPicker({ handleCategory, categoriesSelected }) {
   const catArray = [
     {
       _id: 1,
