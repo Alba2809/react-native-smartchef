@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import Toast from 'react-native-toast-message';
 import styles from "../../assets/styles/signup.styles.js";
 import COLORS from "../../constants/colors";
 import useAuthStore from "../../store/authScore.js";
@@ -31,7 +32,11 @@ export default function Signup() {
 
     if (!result.success) {
       if (typeof result.error === "string") {
-        Alert.alert("Error", result.error);
+        Toast.show({
+          type: "error",
+          text1: result.error,
+          position: "top"
+        })
       } else {
         setFormErrors(result.error);
       }

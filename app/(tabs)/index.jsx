@@ -7,18 +7,16 @@ import {
 } from "react-native";
 import styles from "../../assets/styles/create.styles";
 import { useCallback, useRef, useState } from "react";
-import BottomSheetManager from "../../components/BottomSheetManager";
+import useAuthStore from "../../store/authScore";
 
 export default function index() {
   /* Bottom sheet */
   const [isOpen, setIsOpen] = useState(false);
   const bottomSheetRef = useRef(null);
+  const { logout } = useAuthStore();
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index) => {
-    console.log("handleSheetChanges", index);
   }, []);
 
   return (
@@ -36,11 +34,9 @@ export default function index() {
         </TouchableOpacity>
       </View>
 
-      <BottomSheetManager bottomSheetRef={bottomSheetRef} title="Test">
-        <View>
-          <Text>Bottom sheet content</Text>
-        </View>
-      </BottomSheetManager>
+      <TouchableOpacity onPress={logout}>
+        <Text>Salir</Text>
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 }

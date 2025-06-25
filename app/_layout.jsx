@@ -6,6 +6,8 @@ import useAuthStore from "../store/authScore";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import LoadingPage from "../components/LoadingPage";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -35,7 +37,7 @@ export default function RootLayout() {
     }
   }, [isReady, user, token, segments]);
 
-  if (!isReady) return null;
+  if (!isReady) return <LoadingPage />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -43,13 +45,17 @@ export default function RootLayout() {
         <SafeAreaProvider>
           <SafeScreen>
             <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
+              {user && token ? (
+                <Stack.Screen name="(tabs)" />
+              ) : (
+                <Stack.Screen name="(auth)" />
+              )}
             </Stack>
           </SafeScreen>
           <StatusBar style="dark" />
         </SafeAreaProvider>
       </BottomSheetModalProvider>
+      <Toast visibilityTime={5000} />
     </GestureHandlerRootView>
   );
 }

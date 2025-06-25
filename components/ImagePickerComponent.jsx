@@ -75,7 +75,7 @@ export default function ImagePickerComponent({
             color={COLORS.textSecondary}
           />
           <Text style={styles.placeholderText}>
-            Presiona para seleccionar una imagen
+            Seleccionar una imagen
           </Text>
         </View>
       )}

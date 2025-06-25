@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import Toast from 'react-native-toast-message';
 import COLORS from "../../constants/colors";
 import styles from "../../assets/styles/login.styles";
 import useAuthStore from "../../store/authScore";
@@ -29,7 +30,11 @@ export default function Login() {
 
     if (!result.success) {
       if (typeof result.error === "string") {
-        Alert.alert("Error", result.error);
+        Toast.show({
+          type: "error",
+          text1: result.error,
+          position: "top"
+        })
       } else {
         setFormErrors(result.error);
       }
