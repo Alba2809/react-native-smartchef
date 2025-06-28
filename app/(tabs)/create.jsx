@@ -1,4 +1,3 @@
-import { useCallback, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,82 +6,15 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  ToastAndroid,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import Toast from 'react-native-toast-message';
 import COLORS from "../../constants/colors";
 import styles from "../../assets/styles/create.styles";
-import CategoryPicker from "../../components/CategoryPicker";
 import ImagePickerComponent from "../../components/ImagePickerComponent";
 import BottomSheetManager from "../../components/BottomSheetManager";
-import IngredientInput from "../../components/IngredientInput";
-import IngredientsList from "../../components/IngredientsList";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
-import StepsList from "../../components/StepsList";
-import StepInput from "../../components/StepInput";
-
-const BottomSheetViews = {
-  CATEGORIES: "CATEGORIES",
-  INGREDIENTS: "INGREDIENTS",
-  NEW_INGREDIENT: "NEW_INGREDIENT",
-  STEPS: "STEPS",
-  NEW_STEP: "NEW_STEP",
-};
-
-const bottomSheetConfig = {
-  [BottomSheetViews.CATEGORIES]: {
-    title: "Selecciona las categorías",
-    snapPoints: ["40%"],
-    content: (props) => (
-      <CategoryPicker
-        handleCategory={props.handleCategory}
-        categoriesSelected={props.categories}
-      />
-    ),
-  },
-  [BottomSheetViews.INGREDIENTS]: {
-    title: "Ingredientes ingresados",
-    snapPoints: ["70%"],
-    content: (props) => (
-      <IngredientsList
-        ingredients={props.ingredients}
-        handleRemoveIngredient={props.handleRemoveIngredient}
-      />
-    ),
-  },
-  [BottomSheetViews.NEW_INGREDIENT]: {
-    title: "Nuevo ingrediente",
-    snapPoints: ["40%"],
-    content: (props) => (
-      <IngredientInput handleAddIngredient={props.handleAddIngredient} />
-    ),
-  },
-  [BottomSheetViews.STEPS]: {
-    title: "Pasos ingresados",
-    snapPoints: ["70%"],
-    content: (props) => (
-      <StepsList
-        steps={props.steps}
-        handleRemoveStep={props.handleRemoveStep}
-      />
-    ),
-  },
-  [BottomSheetViews.NEW_STEP]: {
-    title: "Nuevo paso de preparación",
-    snapPoints: ["50%"],
-    content: (props) => (
-      <StepInput handleAddStep={props.handleAddStep} totalSteps={props.totalSteps} />
-    ),
-  },
-};
-
-const STATUS = {
-  PRIVATE: "Privado",
-  PUBLIC: "Público",
-};
+import useCreateRecipe from "../../hooks/useCreateRecipe";
 
 const RadioOption = (title, subtitle) => (
   <View style={styles.textContainerRadio}>
@@ -92,92 +24,34 @@ const RadioOption = (title, subtitle) => (
 );
 
 export default function create() {
-  /* Form State Variables */
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
-  const [imageBase64, setImageBase64] = useState(null);
-  const [totalTime, setTotalTime] = useState(0);
-  const [ingredients, setIngredients] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [status, setStatus] = useState(STATUS.PRIVATE);
-
-  /* Bottom sheet manager */
-  const bottomSheetRef = useRef(null);
-  const [bsView, setBsView] = useState(BottomSheetViews.CATEGORIES);
-  const currentBsConfig = bottomSheetConfig[bsView];
-
-  const router = useRouter();
-
-  const handleSubmit = async () => {};
-
-  const handlePreview = async () => {};
-
-  const handlePresentModalPress = useCallback((keyView) => {
-    setBsView(keyView);
-    bottomSheetRef.current?.present();
-  }, []);
-
-  const handleCategory = (category) => {
-    /* Add category to categories array, if it doesn't exist, otherwise remove it */
-    if (categories.includes(category)) {
-      setCategories(categories.filter((c) => c !== category));
-    } else {
-      setCategories([...categories, category]);
-    }
-  };
-
-  const handleAddIngredient = (newIngredient) => {
-    setIngredients((prev) => [...prev, newIngredient]);
-    Toast.show({
-      type: "success",
-      text1: "Ingrediente agregado",
-      position: "top",
-      text1Style: { fontSize: 14 },
-    })
-  };
-
-  const handleRemoveIngredient = (index) => {
-    const newIngredients = ingredients.filter((_, i) => i !== index);
-
-    setIngredients(newIngredients);
-
-    Toast.show({
-      type: "success",
-      text1: "Ingrediente eliminado",
-      position: "top",
-      text1Style: { fontSize: 14 },
-    })
-  };
-
-  const handleAddStep = (newStep) => {
-    setSteps((prev) => [...prev, newStep]);
-    Toast.show({
-      type: "success",
-      text1: "Paso de preparación agregado",
-      position: "top",
-      text1Style: { fontSize: 14 },
-    })
-  }
-
-  const handleRemoveStep = (index) => {
-    const newSteps = steps.filter((_, i) => i !== index);
-
-    /* Update number attribute */
-    newSteps.forEach((step, i) => {
-      step.number = i + 1;
-    });
-
-    setSteps(newSteps);
-
-    Toast.show({
-      type: "success",
-      text1: "Paso de preparación eliminado",
-      position: "top",
-      text1Style: { fontSize: 14 },
-    })
-  };
+  const {
+    handleSubmit,
+    handlePreview,
+    STATUS_OPTIONS,
+    categories,
+    description,
+    setDescription,
+    handleAddIngredient,
+    handleAddStep,
+    handleCategory,
+    handleRemoveIngredient,
+    handleRemoveStep,
+    image,
+    ingredients,
+    setImage,
+    setImageBase64,
+    setStatus,
+    setTitle,
+    setTotalTime,
+    status,
+    steps,
+    title,
+    totalTime,
+    BottomSheetViews,
+    currentBsConfig,
+    handlePresentModalPress,
+    bottomSheetRef,
+  } = useCreateRecipe();
 
   return (
     <KeyboardAvoidingView
@@ -319,18 +193,14 @@ export default function create() {
           <Text style={styles.titleCard}>Pasos de preparación</Text>
           <TouchableOpacity
             style={{ ...styles.buttonSecondary, marginBottom: 5 }}
-            onPress={() =>
-              handlePresentModalPress(BottomSheetViews.NEW_STEP)
-            }
+            onPress={() => handlePresentModalPress(BottomSheetViews.NEW_STEP)}
           >
             <Text style={styles.buttonText}>Agregar paso</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.buttonSecondary}
-            onPress={() =>
-              handlePresentModalPress(BottomSheetViews.STEPS)
-            }
+            onPress={() => handlePresentModalPress(BottomSheetViews.STEPS)}
           >
             <Text style={styles.buttonText}>Ver pasos</Text>
           </TouchableOpacity>
@@ -344,14 +214,14 @@ export default function create() {
             onChange={setStatus}
             options={[
               {
-                value: STATUS.PRIVATE,
+                value: STATUS_OPTIONS.PRIVATE,
                 content: RadioOption(
                   "Guardar localmente",
                   "Solo tú podrás ver esta receta"
                 ),
               },
               {
-                value: STATUS.PUBLIC,
+                value: STATUS_OPTIONS.PUBLIC,
                 content: RadioOption(
                   "Hacer pública",
                   "Otros usuarios podrán encontrar tu receta"

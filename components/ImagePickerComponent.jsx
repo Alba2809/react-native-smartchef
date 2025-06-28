@@ -55,6 +55,7 @@ export default function ImagePickerComponent({
               encoding: "base64",
             }
           );
+          setImageBase64(base64);
         }
       }
     } catch (error) {

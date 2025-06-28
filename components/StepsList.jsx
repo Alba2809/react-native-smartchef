@@ -36,6 +36,13 @@ export default function StepsList({ steps = [], handleRemoveStep }) {
           />
         </View>
       ))}
+      {steps.length === 0 && (
+        <Text
+          style={{ fontSize: 15, color: COLORS.textSecondary }}
+        >
+          No ha registrado pasos de preparación...
+        </Text>
+      )}
     </>
   );
 }

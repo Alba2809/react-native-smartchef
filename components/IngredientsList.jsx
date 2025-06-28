@@ -10,10 +10,7 @@ export default function IngredientsList({
   return (
     <>
       {ingredients.map((ingredient, index) => (
-        <View
-          key={index}
-          style={styles.ingredientListContainer}
-        >
+        <View key={index} style={styles.ingredientListContainer}>
           <Text
             style={styles.ingredientListName}
             numberOfLines={2}
@@ -31,6 +28,13 @@ export default function IngredientsList({
           </TouchableOpacity>
         </View>
       ))}
+      {ingredients.length === 0 && (
+        <Text
+          style={{ fontSize: 15, color: COLORS.textSecondary}}
+        >
+          No ha registrado ingredientes...
+        </Text>
+      )}
     </>
   );
 }
