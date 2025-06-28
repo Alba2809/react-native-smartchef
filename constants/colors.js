@@ -24,8 +24,8 @@ const COLORS = {
   placeholderText: "#767676",
   background: "#ede1d1",
   cardBackground: "#faf5eb",
-  inputBackground: "#f7f2ea",
-  border: "#e2d6c1",
+  inputBackground: "#f9fafb",
+  border: "#e4e7eb",
   white: "#ffffff",
   black: "#000000",
 };
