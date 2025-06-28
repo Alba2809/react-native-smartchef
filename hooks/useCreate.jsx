@@ -69,7 +69,7 @@ const STATUS_OPTIONS = {
     PUBLIC: "Público",
   };
 
-export default function useCreateRecipe() {
+export default function useCreate() {
   /* Form State Structure */
   const [formState, updateFormState] = useReducer(
     (prev, next) => {
@@ -86,6 +86,12 @@ export default function useCreateRecipe() {
     }
   );
   const [imageBase64, setImageBase64] = useState(null);
+  const filds = {
+    TITLE: "title",
+    DESCRIPTION: "description",
+    IMAGE: "image",
+    TOTAL_TIME: "totalTime",
+  }
   
 
   /* Bottom sheet manager */
@@ -179,16 +185,14 @@ export default function useCreateRecipe() {
   return {
     /* Form State */
     title: formState.title,
-    setTitle: handleInputOnChange("title"),
     description: formState.description,
-    setDescription: handleInputOnChange("description"),
     image: formState.image,
-    setImage: handleInputOnChange("image"),
     totalTime: formState.totalTime,
-    setTotalTime: handleInputOnChange("totalTime"),
     ingredients: formState.ingredients,
     steps: formState.steps,
     categories: formState.categories,
+    handleInputOnChange,
+    filds,
     
     /* Form state functions */
     handlePresentModalPress,

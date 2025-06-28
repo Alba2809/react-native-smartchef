@@ -14,7 +14,7 @@ import styles from "../../assets/styles/create.styles";
 import ImagePickerComponent from "../../components/ImagePickerComponent";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
-import useCreateRecipe from "../../hooks/useCreateRecipe";
+import useCreate from "../../hooks/useCreate";
 
 const RadioOption = (title, subtitle) => (
   <View style={styles.textContainerRadio}>
@@ -25,33 +25,42 @@ const RadioOption = (title, subtitle) => (
 
 export default function create() {
   const {
+    /* Form State */
+    title,
+    description,
+    image,
+    totalTime,
+    ingredients,
+    steps,
+    categories,
+    handleInputOnChange,
+    filds,
+    
+    /* Form state functions */
+    handlePresentModalPress,
+    handleCategory,
+    handleAddIngredient,
+    handleRemoveIngredient,
+    handleAddStep,
+    handleRemoveStep,
+
+    /* Private state */
+    STATUS_OPTIONS,
+    status,
+    setStatus,
+
+    /* Image state */
+    setImageBase64,
+
+    /* Submit state */
     handleSubmit,
     handlePreview,
-    STATUS_OPTIONS,
-    categories,
-    description,
-    setDescription,
-    handleAddIngredient,
-    handleAddStep,
-    handleCategory,
-    handleRemoveIngredient,
-    handleRemoveStep,
-    image,
-    ingredients,
-    setImage,
-    setImageBase64,
-    setStatus,
-    setTitle,
-    setTotalTime,
-    status,
-    steps,
-    title,
-    totalTime,
+
+    /* Bottom sheet manager */
     BottomSheetViews,
     currentBsConfig,
-    handlePresentModalPress,
-    bottomSheetRef,
-  } = useCreateRecipe();
+    bottomSheetRef
+  } = useCreate();
 
   return (
     <KeyboardAvoidingView
@@ -98,7 +107,7 @@ export default function create() {
             <Text style={styles.label}>Foto de la receta</Text>
             <ImagePickerComponent
               image={image}
-              setImage={setImage}
+              setImage={handleInputOnChange(filds.IMAGE)}
               setImageBase64={setImageBase64}
             />
           </View>
@@ -118,7 +127,7 @@ export default function create() {
                 placeholder="Ej. Pasta Carbonara Casera"
                 placeholderTextColor={COLORS.placeholderText}
                 value={title}
-                onChangeText={setTitle}
+                onChangeText={handleInputOnChange(filds.TITLE)}
               />
             </View>
           </View>
@@ -130,7 +139,7 @@ export default function create() {
               style={styles.textArea}
               placeholderTextColor={COLORS.placeholderText}
               placeholder="Describe tu receta..."
-              onChangeText={setDescription}
+              onChangeText={handleInputOnChange(filds.DESCRIPTION)}
               textAlignVertical="top"
               value={description}
               multiline
@@ -146,7 +155,7 @@ export default function create() {
                 placeholder="45"
                 placeholderTextColor={COLORS.placeholderText}
                 value={totalTime}
-                onChangeText={setTotalTime}
+                onChangeText={handleInputOnChange(filds.TOTAL_TIME)}
                 keyboardType="numeric"
                 maxLength={4}
               />
