@@ -6,20 +6,65 @@ import {
   Platform,
   Image,
   TextInput,
+  Animated,
+  Button,
 } from "react-native";
 import { useCallback, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../../assets/styles/home.styles";
-import useAuthStore from "../../store/authScore";
 import COLORS from "../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView } from "react-native-gesture-handler";
+import useHome from "../../hooks/useHome";
+import RecipeCard from "../../components/RecipeCard";
 
 export default function index() {
-  /* Bottom sheet */
-  const [isOpen, setIsOpen] = useState(false);
-  const bottomSheetRef = useRef(null);
-  const { user } = useAuthStore();
+  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter } = useHome();
+
+  const testRecipes = [
+    {
+      _id: 1,
+      title: "Pasta Casbonara Clásica",
+      description:
+        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
+      image: require("../../assets/images/pasta.jpeg"),
+      totalTime: 10,
+      ingredients: ["Tomate", "Agua"],
+      steps: ["Paso 1", "Paso 2", "Paso 3"],
+      categories: ["Entrantes", "Recetas de cocina"],
+      user: {
+        username: "John Doe",
+      },
+    },
+    {
+      _id: 2,
+      title: "Pasta Casbonara Clásica",
+      description:
+        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
+      image: require("../../assets/images/pasta.jpeg"),
+      totalTime: 10,
+      ingredients: ["Tomate", "Agua"],
+      steps: ["Paso 1", "Paso 2", "Paso 3"],
+      categories: ["Entrantes", "Recetas de cocina"],
+      user: {
+        username: "John Doe",
+      },
+    },
+    {
+      _id: 3,
+      title: "Pasta Casbonara Clásica",
+      description:
+        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
+      image: require("../../assets/images/pasta.jpeg"),
+      totalTime: 10,
+      ingredients: ["Tomate", "Agua"],
+      steps: ["Paso 1", "Paso 2", "Paso 3"],
+      categories: ["Entrantes", "Recetas de cocina"],
+      user: {
+        username: "John Doe",
+      },
+    },
+  ];
 
   return (
     <KeyboardAvoidingView
@@ -31,10 +76,28 @@ export default function index() {
           flex: 1,
           backgroundColor: COLORS.background,
           padding: 16,
-          gap: 8,
+          gap: 10,
         }}
       >
         {/* Header */}
+        {/* <Animated.View
+          style={{
+            position: "absolute",
+            flexDirection: "column",
+            backgroundColor: COLORS.background,
+            gap: 8,
+            top: 0,
+            right: 16,
+            left: 16,
+            paddingBottom: 12,
+            zIndex: 1,
+            transform: [
+              {
+                translateY: headerTranslateY,
+              },
+            ],
+          }}
+        > */}
         <LinearGradient
           colors={[COLORS.primary, COLORS.secondary]}
           start={{ x: 0, y: 0.5 }}
@@ -44,7 +107,6 @@ export default function index() {
             flexDirection: "row",
             justifyContent: "space-between",
             padding: 8,
-            borderColor: COLORS.border,
             borderRadius: 14,
             shadowColor: COLORS.black,
             shadowOffset: { width: 0, height: 2 },
@@ -155,73 +217,51 @@ export default function index() {
 
           {/* Tags */}
           <View style={{ flexDirection: "row", gap: 8 }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: COLORS.primary,
-                borderRadius: 14,
-                flex: 1,
-                paddingVertical: 6,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: "JetBrainsMono-Medium",
-                  color: COLORS.white,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                Todas
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                backgroundColor: COLORS.primary,
-                borderRadius: 14,
-                flex: 1,
-                paddingVertical: 6,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: "JetBrainsMono-Medium",
-                  color: COLORS.white,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                Guardadas
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                backgroundColor: COLORS.primary,
-                borderRadius: 14,
-                flex: 1,
-                paddingVertical: 6,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: "JetBrainsMono-Medium",
-                  color: COLORS.white,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                Mis recetas
-              </Text>
-            </TouchableOpacity>
+            {Object.keys(FILTER_OPTIONS).map((key) => {
+              const value = FILTER_OPTIONS[key];
+              const isActive = baseFilter === value;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  style={{
+                    backgroundColor: isActive ? COLORS.primary : "lightgray",
+                    borderRadius: 14,
+                    flex: 1,
+                    paddingVertical: 6,
+                  }}
+                  onPress={() => setBaseFilter(value)}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontFamily: "JetBrainsMono-Medium",
+                      color: isActive ? COLORS.white : COLORS.textDark,
+                      textAlign: "center",
+                      fontWeight: isActive ? "bold" : "normal",
+                    }}
+                  >
+                    {value}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
+        {/* </Animated.View> */}
 
         {/* Recipes list */}
-        <ScrollView
-          style={{ flex: 1, backgroundColor: COLORS.white }}
-        ></ScrollView>
+        <Animated.FlatList
+          data={testRecipes}
+          renderItem={({ item }) => <RecipeCard item={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          scrollEventThrottle={16}
+          /* onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )} */
+          style={{ flex: 1, borderRadius: 14, paddingBottom: 10 }}
+          contentContainerStyle={{ gap: 20 }}
+        />
       </View>
     </KeyboardAvoidingView>
   );

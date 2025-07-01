@@ -15,7 +15,7 @@ import { Link } from "expo-router";
 import Toast from 'react-native-toast-message';
 import COLORS from "../../constants/colors";
 import styles from "../../assets/styles/login.styles";
-import useAuthStore from "../../store/authScore";
+import useAuthStore from "../../store/authStore";
 
 export default function Login() {
   const [email, setEmail] = useState("");

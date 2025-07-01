@@ -4,7 +4,7 @@ import API_URL from "../constants/apiUrl";
 
 const useAuthStore = create((set) => ({
   user: null,
-  toke: null,
+  token: null,
   isLoading: false,
 
   register: async (username, email, password) => {
