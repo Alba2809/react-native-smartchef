@@ -9,12 +9,10 @@ import {
   Animated,
   Button,
 } from "react-native";
-import { useCallback, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView } from "react-native-gesture-handler";
 import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
 

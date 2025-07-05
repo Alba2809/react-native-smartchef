@@ -1,10 +1,10 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import COLORS from "../constants/colors";
+import { router } from "expo-router";
 
 const RecipeCard = ({ item }) => {
   const redirectToRecipeDetails = (itemId) => {
-    console.log(itemId);
-    router.push(`/recipe/${itemId}`);
+    router.push(`/details/${itemId}`);
   };
 
   return (
@@ -50,7 +50,7 @@ const RecipeCard = ({ item }) => {
         </View>
       </View>
       <View style={{ padding: 16, flex: 1, flexDirection: "column", gap: 12 }}>
-        <Text style={{ fontSize: 20, fontWeight: "500", color: "#2d3748",  }}>
+        <Text style={{ fontSize: 20, fontWeight: "500", color: "#2d3748" }}>
           {item.title}
         </Text>
         <Text
@@ -87,9 +87,12 @@ const RecipeCard = ({ item }) => {
           }}
         ></View>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <TouchableOpacity onPress={() => recipeDetails(item._id)}>
+          <TouchableOpacity
+            onPress={() => redirectToRecipeDetails(item._id)}
+            style={{ width: "100%" }}
+          >
             <Text
-              style={{ fontSize: 16, fontWeight: "500", color: COLORS.primary }}
+              style={{ fontSize: 16, fontWeight: "500", color: COLORS.primary, textAlign: "center" }}
             >
               Ver receta
             </Text>
