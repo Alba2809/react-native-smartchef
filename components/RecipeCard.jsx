@@ -85,7 +85,7 @@ const RecipeCard = ({ item }) => {
             borderColor: "lightgray",
             width: "100%",
           }}
-        ></View>
+        />
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity
             onPress={() => redirectToRecipeDetails(item._id)}

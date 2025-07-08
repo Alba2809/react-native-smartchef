@@ -23,16 +23,16 @@ export default function IngredientsList({
             {ingredient.amount + " " + ingredient.unit}
           </Text>
 
-          <TouchableOpacity onPress={() => handleRemoveIngredient(index)}>
-            <Ionicons name="trash-outline" size={25} color={COLORS.primary} />
-          </TouchableOpacity>
+          {handleRemoveIngredient && (
+            <TouchableOpacity onPress={() => handleRemoveIngredient(index)}>
+              <Ionicons name="trash-outline" size={25} color={COLORS.primary} />
+            </TouchableOpacity>
+          )}
         </View>
       ))}
       {ingredients.length === 0 && (
-        <Text
-          style={{ fontSize: 15, color: COLORS.textSecondary}}
-        >
-          No ha registrado ingredientes...
+        <Text style={{ fontSize: 15, color: COLORS.textSecondary }}>
+          No se han registrado ingredientes...
         </Text>
       )}
     </>
