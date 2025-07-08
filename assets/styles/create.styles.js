@@ -74,14 +74,15 @@ const styles = StyleSheet.create({
     height: 48,
     color: COLORS.textDark,
   },
-  textArea: {
+  textAreaContainer: {
     backgroundColor: COLORS.white,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 12,
-    height: 100,
-    color: COLORS.textDark,
+    borderRadius: 14,
+    height: "auto",
+  },
+  textArea: {
+    fontSize: 15,
+    lineHeight: 20,
+    color: "#525d6d",
   },
   ratingContainer: {
     flexDirection: "row",
@@ -351,19 +352,18 @@ const styles = StyleSheet.create({
   /* Steps section */
   stepContainer: {
     flexDirection: "column",
-    gap: 4,
+    gap: 8,
     backgroundColor: COLORS.white,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
-    padding: 10,
+    padding: 12,
     marginBottom: 8,
   },
   stepHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 5,
   },
   stepNumberText: {
     fontSize: 16,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    gap: 5,
+    gap: 12,
     flex: 1,
   },
   stepDurationContainer: {

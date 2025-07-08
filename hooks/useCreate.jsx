@@ -14,7 +14,7 @@ const BottomSheetViews = {
   NEW_STEP: "NEW_STEP",
 };
 
-const bottomSheetConfig = {
+const BottomSheetConfig = {
   [BottomSheetViews.CATEGORIES]: {
     title: "Selecciona las categorías",
     snapPoints: ["40%"],
@@ -92,12 +92,9 @@ export default function useCreate() {
     IMAGE: "image",
     TOTAL_TIME: "totalTime",
   }
-  
 
-  /* Bottom sheet manager */
+  /* Bottom sheet */
   const bottomSheetRef = useRef(null);
-  const [bsView, setBsView] = useState(BottomSheetViews.CATEGORIES);
-  const currentBsConfig = bottomSheetConfig[bsView];
 
   /*  */
   const [status, setStatus] = useState(STATUS_OPTIONS.PRIVATE);
@@ -105,11 +102,6 @@ export default function useCreate() {
   const handleSubmit = async () => {};
 
   const handlePreview = async () => {};
-
-  const handlePresentModalPress = useCallback((keyView) => {
-    setBsView(keyView);
-    bottomSheetRef.current?.present();
-  }, []);
 
   const handleCategory = (category) => {
     /* Add category to categories array, if it doesn't exist, otherwise remove it */
@@ -195,28 +187,26 @@ export default function useCreate() {
     filds,
     
     /* Form state functions */
-    handlePresentModalPress,
     handleCategory,
     handleAddIngredient,
     handleRemoveIngredient,
     handleAddStep,
     handleRemoveStep,
-
+    
     /* Private state */
     STATUS_OPTIONS,
     status,
     setStatus,
-
+    
     /* Image state */
     setImageBase64,
-
+    
     /* Submit state */
     handleSubmit,
     handlePreview,
-
-    /* Bottom sheet manager */
+    
+    /* Bottom sheet */
     BottomSheetViews,
-    currentBsConfig,
-    bottomSheetRef
+    BottomSheetConfig
   };
 }

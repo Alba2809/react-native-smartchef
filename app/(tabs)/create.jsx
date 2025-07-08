@@ -15,6 +15,7 @@ import ImagePickerComponent from "../../components/ImagePickerComponent";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
 import useCreate from "../../hooks/useCreate";
+import useBottomSheet from "../../hooks/useBottomSheet";
 
 const RadioOption = (title, subtitle) => (
   <View style={styles.textContainerRadio}>
@@ -35,9 +36,8 @@ export default function create() {
     categories,
     handleInputOnChange,
     filds,
-    
+
     /* Form state functions */
-    handlePresentModalPress,
     handleCategory,
     handleAddIngredient,
     handleRemoveIngredient,
@@ -58,9 +58,29 @@ export default function create() {
 
     /* Bottom sheet manager */
     BottomSheetViews,
-    currentBsConfig,
-    bottomSheetRef
+    BottomSheetConfig
   } = useCreate();
+
+  const {
+    handlePresentModalPress,
+    bottomSheetRef,
+    currentBsConfig,
+    bottomSheetContent,
+  } = useBottomSheet({
+    BottomSheetViews,
+    BottomSheetConfig,
+    dataProps: {
+      handleCategory,
+      categories,
+      ingredients,
+      handleAddIngredient,
+      handleRemoveIngredient,
+      steps,
+      handleAddStep,
+      handleRemoveStep,
+      totalSteps: steps.length || 0,
+    },
+  });
 
   return (
     <KeyboardAvoidingView
@@ -261,17 +281,7 @@ export default function create() {
           title={currentBsConfig.title}
           snapPoints={currentBsConfig.snapPoints}
         >
-          {currentBsConfig.content({
-            handleCategory,
-            categories,
-            ingredients,
-            handleAddIngredient,
-            handleRemoveIngredient,
-            steps,
-            handleAddStep,
-            handleRemoveStep,
-            totalSteps: steps.length || 0,
-          })}
+          {bottomSheetContent}
         </BottomSheetManager>
       )}
     </KeyboardAvoidingView>
