@@ -18,27 +18,26 @@ export default function BottomSheetManager({
   const insets = useSafeAreaInsets();
 
   /* Background */
-  const renderBackdrop = (backdropProps) => (
-    <BottomSheetBackdrop
-      {...backdropProps}
-      disappearsOnIndex={-1}
-      appearsOnIndex={0}
-      pressBehavior="close"
-    />
+  const renderBackdrop = useCallback(
+    (backdropProps) => (
+      <BottomSheetBackdrop
+        {...backdropProps}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        pressBehavior="close"
+      />
+    ),
+    []
   );
 
   /* Keyboard */
   useEffect(() => {
     const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
       // Reset the snap point to the initial position
-      if (bottomSheetRef?.current) {
-        bottomSheetRef.current.snapToIndex(0);
-      }
+      bottomSheetRef?.current?.snapToIndex(0);
     });
 
-    return () => {
-      keyboardHideListener.remove();
-    };
+    return () => keyboardHideListener.remove();
   }, [bottomSheetRef]);
 
   return (
@@ -53,6 +52,7 @@ export default function BottomSheetManager({
       <BottomSheetScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollView}
+        nestedScrollEnabled={true}
       >
         {children}
       </BottomSheetScrollView>
