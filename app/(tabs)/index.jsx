@@ -69,14 +69,7 @@ export default function index() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: COLORS.background,
-          padding: 16,
-          gap: 10,
-        }}
-      >
+      <View style={styles.container}>
         {/* Header */}
         {/* <Animated.View
           style={{
@@ -101,61 +94,21 @@ export default function index() {
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           // style={styles.containerAI}
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            padding: 8,
-            borderRadius: 14,
-            shadowColor: COLORS.black,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 3,
-          }}
+          style={styles.linearGradient}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={styles.headerLeftContainer}>
             <Image
               source={require("../../assets/images/icon.png")}
-              style={{
-                width: 45,
-                height: 45,
-              }}
+              style={styles.headerIconApp}
             />
-            <View
-              style={{
-                flexDirection: "column",
-                alignSelf: "flex-start",
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontFamily: "JetBrainsMono-Medium",
-                  fontWeight: "bold",
-                  color: COLORS.white,
-                }}
-              >
-                SmartChef
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: "JetBrainsMono-Medium",
-                  color: COLORS.textPrimary,
-                }}
-              >
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerAppName}>SmartChef</Text>
+              <Text style={styles.headerGreeting}>
                 Buen día, {user.username || "Invitado"}
               </Text>
             </View>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
+          <View style={styles.headerUserContainer}>
             <Ionicons
               name="notifications-outline"
               size={24}
@@ -163,50 +116,18 @@ export default function index() {
             />
             <Image
               source={require("../../assets/images/icon.png")}
-              style={{
-                width: 40,
-                height: 40,
-              }}
+              style={styles.headerUserIcon}
             />
           </View>
         </LinearGradient>
 
         {/* Search bar with filter and tags */}
-        <View
-          style={{
-            flexDirection: "column",
-            padding: 8,
-            gap: 14,
-            backgroundColor: COLORS.white,
-            borderRadius: 14,
-            shadowColor: COLORS.black,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 3,
-          }}
-        >
+        <View style={styles.filterContainer}>
           {/* Search bar */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-              backgroundColor: COLORS.inputBackground,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: COLORS.border,
-              paddingHorizontal: 8,
-            }}
-          >
+          <View style={styles.searchContainer}>
             <Ionicons name="search-outline" size={20} />
             <TextInput
-              style={{
-                fontSize: 14,
-                fontFamily: "JetBrainsMono-Medium",
-                color: COLORS.textDark,
-                flex: 1,
-              }}
+              style={styles.searchInput}
               placeholder="Buscar receta..."
               placeholderTextColor={COLORS.placeholderText}
             />
@@ -214,29 +135,29 @@ export default function index() {
           </View>
 
           {/* Tags */}
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={styles.tagsContainer}>
             {Object.keys(FILTER_OPTIONS).map((key) => {
               const value = FILTER_OPTIONS[key];
               const isActive = baseFilter === value;
               return (
                 <TouchableOpacity
                   key={key}
-                  style={{
-                    backgroundColor: isActive ? COLORS.primary : "lightgray",
-                    borderRadius: 14,
-                    flex: 1,
-                    paddingVertical: 6,
-                  }}
+                  style={[
+                    styles.tagButton,
+                    {
+                      backgroundColor: isActive ? COLORS.primary : "lightgray",
+                    },
+                  ]}
                   onPress={() => setBaseFilter(value)}
                 >
                   <Text
-                    style={{
-                      fontSize: 14,
-                      fontFamily: "JetBrainsMono-Medium",
-                      color: isActive ? COLORS.white : COLORS.textDark,
-                      textAlign: "center",
-                      fontWeight: isActive ? "bold" : "normal",
-                    }}
+                    style={[
+                      styles.tagText,
+                      {
+                        color: isActive ? COLORS.white : COLORS.textDark,
+                        fontWeight: isActive ? "bold" : "normal",
+                      },
+                    ]}
                   >
                     {value}
                   </Text>
