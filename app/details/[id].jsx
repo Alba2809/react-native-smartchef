@@ -13,7 +13,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import COLORS from "../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
+import styles from "../../assets/styles/details.styles";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import IngredientsList from "../../components/IngredientsList";
 import StepsList from "../../components/StepsList";
@@ -172,39 +173,22 @@ const DetailsScreen = () => {
 
   return (
     <View
-      style={{ flex: 1, flexDirection: "column", paddingBottom: insets.bottom + 5 }}
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom + 5,
+        },
+      ]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {/* Header */}
       <Animated.View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 8,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 3,
-
-          backgroundColor: backgroundColor,
-          paddingHorizontal: 8,
-          paddingTop: insets.top + 8,
-          paddingBottom: 8,
-        }}
+        style={[
+          styles.headerContainer,
+          { backgroundColor: backgroundColor, paddingTop: insets.top + 8 },
+        ]}
       >
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "100%",
-            width: 40,
-            height: 40,
-            padding: 8,
-          }}
-          onPress={goBack}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={goBack}>
           <Ionicons name="arrow-back" size={24} color={"black"} />
         </TouchableOpacity>
       </Animated.View>
@@ -212,27 +196,14 @@ const DetailsScreen = () => {
       {/* Imagen */}
       <Image
         source={testData.image}
-        style={{
-          width: "100%",
-          height: 250,
-          zIndex: 1,
-          position: "absolute",
-          top: 0,
-        }}
+        style={styles.backgroundImage}
         resizeMode="cover"
       />
 
       <LinearGradient
         colors={["transparent", "#f2f2f2"]}
         locations={[0, 0.15]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "100%",
-          zIndex: 2,
-        }}
+        style={styles.backgroundFade}
         pointerEvents="none"
       />
 
@@ -240,12 +211,7 @@ const DetailsScreen = () => {
         contentContainerStyle={{
           gap: 20,
         }}
-        style={{
-          flex: 1,
-          marginTop: insets.top + 56,
-          zIndex: 3,
-          position: "relative",
-        }}
+        style={[styles.scrollView, { marginTop: insets.top + 56 }]}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -254,204 +220,65 @@ const DetailsScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Basic info Card */}
-        <View
-          style={{
-            flexDirection: "column",
-            backgroundColor: "white",
-            borderRadius: 14,
-            padding: 16,
-            marginHorizontal: 20,
-            gap: 12,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              textAlign: "center",
-              color: "#2d3748",
-            }}
-          >
-            {testData.title}
-          </Text>
+        <View style={styles.basicInfoContainer}>
+          <Text style={styles.title}>{testData.title}</Text>
 
           {/* user info */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 8,
-            }}
-          >
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-            >
+          <View style={styles.userContainer}>
+            <View style={styles.userInfo}>
               <Image
                 source={require("../../assets/images/icon.png")}
-                style={{ width: 35, height: 35 }}
+                style={styles.userImage}
               />
-              <View style={{}}>
-                <Text
-                  style={{ fontSize: 14, fontWeight: "500", color: "#2d3748" }}
-                >
-                  por
-                </Text>
-                <Text style={{ fontSize: 14, fontWeight: "600" }}>
-                  {testData.user.username}
-                </Text>
+              <View>
+                <Text style={styles.userNameFor}>por</Text>
+                <Text style={styles.userName}>{testData.user.username}</Text>
               </View>
             </View>
             {/* Read the text */}
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                backgroundColor: "#fff2ed",
-                borderRadius: 16,
-              }}
-            >
+            <TouchableOpacity style={styles.btnPlayRecipe}>
               <Ionicons name="volume-high" size={20} color={COLORS.primary} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: COLORS.primary,
-                }}
-              >
-                Reproducir
-              </Text>
+              <Text style={styles.btnPlayRecipeText}>Reproducir</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Likes */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-around",
-              gap: 8,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
+          {/* Likes, time, download */}
+          <View style={styles.interactionsContainer}>
+            <TouchableOpacity style={styles.btnLikes}>
               <Ionicons name="heart" size={20} color="#ef4444" />
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: COLORS.primary,
-                }}
-              >
-                {testData.likes}
-              </Text>
+              <Text style={styles.btnLikesText}>{testData.likes}</Text>
             </TouchableOpacity>
 
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
+            <View style={styles.timeContainer}>
               <Ionicons name="time" size={20} color="gray" />
-              <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
-                {testData.totalTime} min
-              </Text>
+              <Text style={styles.timeText}>{testData.totalTime} min</Text>
             </View>
 
             {/* Download */}
-            <TouchableOpacity
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
+            <TouchableOpacity style={styles.btnTimeContainer}>
               <Ionicons name="cloud-download" size={20} color="gray" />
-              <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>
-                Guardar
-              </Text>
+              <Text style={styles.btnTimeText}>Guardar</Text>
             </TouchableOpacity>
           </View>
 
           {/* Description */}
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: "500",
-              color: "#718096",
-              lineHeight: 22,
-            }}
-          >
-            {testData.description}
-          </Text>
+          <Text style={styles.description}>{testData.description}</Text>
         </View>
 
         {/* Ingredients */}
-        <View
-          style={{
-            flexDirection: "column",
-            backgroundColor: "white",
-            borderRadius: 14,
-            padding: 16,
-            marginHorizontal: 20,
-            gap: 12,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              textAlign: "center",
-              color: "#2d3748",
-            }}
-          >
-            Ingredientes
-          </Text>
+        <View style={styles.itemsContainer}>
+          <Text style={styles.title}>Ingredientes</Text>
 
-          <View style={{ flex: 1, flexDirection: "column", gap: 16 }}>
+          <View style={styles.itemsList}>
             {testData.ingredients.slice(0, 6).map((ingredient, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: COLORS.primary,
-                      borderRadius: "100%",
-                      width: 8,
-                      height: 8,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "500",
-                      color: "#2d3748",
-                    }}
-                  >
+              <View key={index} style={styles.ingredientsContainer}>
+                <View style={styles.ingredientName}>
+                  <View style={styles.ingredientNameCircle} />
+                  <Text style={styles.ingredientNameText}>
                     {ingredient.name}
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: "#2d3748",
-                  }}
-                >
+                <Text style={styles.ingredientAmount}>
                   {ingredient.amount} {ingredient.unit}
                 </Text>
               </View>
@@ -460,29 +287,16 @@ const DetailsScreen = () => {
 
           {testData.ingredients.length > 6 && (
             <>
-              <View
-                style={{
-                  width: "100%",
-                  height: 1,
-                  backgroundColor: "lightgray",
-                }}
-              />
+              <View style={styles.showMoreContainer} />
 
-              <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <View style={styles.showMoreBackground}>
                 <TouchableOpacity
                   onPress={() =>
                     handlePresentModalPress(BottomSheetViews.INGREDIENTS)
                   }
-                  style={{ width: "100%" }}
+                  style={styles.btnShowMore}
                 >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "500",
-                      color: COLORS.primary,
-                      textAlign: "center",
-                    }}
-                  >
+                  <Text style={styles.btnShowMoreText}>
                     Ver todos los ingredientes
                   </Text>
                 </TouchableOpacity>
@@ -492,111 +306,27 @@ const DetailsScreen = () => {
         </View>
 
         {/* Steps */}
-        <View
-          style={{
-            flexDirection: "column",
-            backgroundColor: "white",
-            borderRadius: 14,
-            padding: 16,
-            marginHorizontal: 20,
-            gap: 12,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                textAlign: "center",
-                color: "#2d3748",
-              }}
-            >
-              Preparación
-            </Text>
+        <View style={styles.itemsContainer}>
+          <View style={styles.stepsHeader}>
+            <Text style={styles.title}>Preparación</Text>
             {/* Read steps */}
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: 16,
-              }}
-            >
+            <TouchableOpacity style={styles.btnReadSteps}>
               <Ionicons name="volume-high" size={20} color={COLORS.primary} />
             </TouchableOpacity>
           </View>
 
           {/* First 3 steps */}
-          <View style={{ flex: 1, flexDirection: "column", gap: 16 }}>
+          <View style={styles.itemsList}>
             {testData.steps.slice(0, limitSteps).map((step, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: "column",
-                  gap: 10,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: COLORS.primary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 100,
-                      width: 35,
-                      height: 35,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "500",
-                        color: COLORS.white,
-                      }}
-                    >
-                      {step.number}
-                    </Text>
+              <View key={index} style={styles.stepItem}>
+                <View style={styles.stepContainer}>
+                  <View style={styles.stepNumberContainer}>
+                    <Text style={styles.stepNumber}>{step.number}</Text>
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 12,
-                    }}
-                  >
+                  <View style={styles.stepDurationContainer}>
                     {/* Duration */}
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        backgroundColor: "#f3f4f6",
-                        borderRadius: 16,
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "500",
-                          color: "#718096",
-                        }}
-                      >
+                    <View style={styles.stepDuration}>
+                      <Text style={styles.stepDurationText}>
                         {step.duration} min
                       </Text>
                     </View>
@@ -606,52 +336,28 @@ const DetailsScreen = () => {
                 </View>
 
                 {/* Description */}
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: "#525d6d",
-                    width: "100%",
-                    paddingHorizontal: 5,
-                  }}
-                  numberOfLines={5}
-                >
+                <Text style={styles.stepDescription} numberOfLines={5}>
                   {step.text}
                 </Text>
 
                 {/* Divider */}
-                {index < limitSteps - 1 && (
-                  <View style={{ height: 1, backgroundColor: "lightgray" }} />
-                )}
+                {index < limitSteps - 1 && <View style={styles.stepDivider} />}
               </View>
             ))}
           </View>
 
           {testData.steps.length > limitSteps && (
             <>
-              <View
-                style={{
-                  width: "100%",
-                  height: 1,
-                  backgroundColor: "lightgray",
-                }}
-              />
+              <View style={styles.showMoreContainer} />
 
-              <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <View style={styles.showMoreBackground}>
                 <TouchableOpacity
                   onPress={() =>
                     handlePresentModalPress(BottomSheetViews.STEPS)
                   }
-                  style={{ width: "100%" }}
+                  style={styles.btnShowMore}
                 >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "500",
-                      color: COLORS.primary,
-                      textAlign: "center",
-                    }}
-                  >
+                  <Text style={styles.btnShowMoreText}>
                     Ver todos los pasos
                   </Text>
                 </TouchableOpacity>
