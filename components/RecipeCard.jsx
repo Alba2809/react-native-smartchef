@@ -1,8 +1,9 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import COLORS from "../constants/colors";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
-const RecipeCard = ({ item }) => {
+const RecipeCard = ({ item, showHeart = false }) => {
   const redirectToRecipeDetails = (itemId) => {
     router.push(`/details/${itemId}`);
   };
@@ -48,6 +49,42 @@ const RecipeCard = ({ item }) => {
             {item.totalTime} min
           </Text>
         </View>
+        {/* <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            position: "absolute",
+            bottom: 10,
+            left: 10,
+            backgroundColor: COLORS.white,
+            borderRadius: 12,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: "500" }}>
+            {item.user.username}
+          </Text>
+        </View> */}
+        {showHeart && (
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              backgroundColor: "#e9e9e8",
+              borderRadius: 100,
+              width: 40,
+              height: 40,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Ionicons name="heart-outline" size={23} color="gray" />
+          </TouchableOpacity>
+        )}
       </View>
       <View style={{ padding: 16, flex: 1, flexDirection: "column", gap: 12 }}>
         <Text style={{ fontSize: 20, fontWeight: "500", color: "#2d3748" }}>
@@ -66,21 +103,6 @@ const RecipeCard = ({ item }) => {
         </Text>
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <Image
-            source={require("../assets/images/icon.png")}
-            style={{ width: 35, height: 35 }}
-          />
-          <Text style={{ fontSize: 14, fontWeight: "500" }}>
-            {item.user.username}
-          </Text>
-        </View>
-        <View
-          style={{
             borderTopWidth: 1,
             borderColor: "lightgray",
             width: "100%",
@@ -92,7 +114,12 @@ const RecipeCard = ({ item }) => {
             style={{ width: "100%" }}
           >
             <Text
-              style={{ fontSize: 16, fontWeight: "500", color: COLORS.primary, textAlign: "center" }}
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+                color: COLORS.primary,
+                textAlign: "center",
+              }}
             >
               Ver receta
             </Text>

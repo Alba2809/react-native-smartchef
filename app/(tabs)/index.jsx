@@ -4,15 +4,15 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Image,
+  // Image,
   TextInput,
   Animated,
-  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Image } from "expo-image";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
-import { LinearGradient } from "expo-linear-gradient";
 import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
 
@@ -115,7 +115,7 @@ export default function index() {
               color={COLORS.border}
             />
             <Image
-              source={require("../../assets/images/icon.png")}
+              source={user.avatar}
               style={styles.headerUserIcon}
             />
           </View>

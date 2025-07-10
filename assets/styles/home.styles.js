@@ -54,6 +54,8 @@ const styles = StyleSheet.create({
   headerUserIcon: {
     width: 40,
     height: 40,
+    backgroundColor: COLORS.white,
+    borderRadius: 100,
   },
 
   /* Search bar with filter and tags */
