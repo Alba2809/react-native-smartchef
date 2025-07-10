@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import styles from "../assets/styles/create.styles";
+import { Ingredients as IngredientsStyles } from "../assets/styles/create/create.styles";
 import COLORS from "../constants/colors";
 
 export default function IngredientsList({
@@ -10,16 +10,16 @@ export default function IngredientsList({
   return (
     <>
       {ingredients.map((ingredient, index) => (
-        <View key={index} style={styles.ingredientListContainer}>
+        <View key={index} style={IngredientsStyles.ingredientListContainer}>
           <Text
-            style={styles.ingredientListName}
+            style={IngredientsStyles.ingredientListName}
             numberOfLines={2}
             ellipsizeMode="tail"
           >
             {ingredient.name}
           </Text>
 
-          <Text style={styles.amountUnitContainer}>
+          <Text style={IngredientsStyles.amountUnitContainer}>
             {ingredient.amount + " " + ingredient.unit}
           </Text>
 

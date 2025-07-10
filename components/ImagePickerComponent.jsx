@@ -7,11 +7,12 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import styles from "../assets/styles/create.styles";
+import { ImagePicker as ImagePickerStyles } from "../assets/styles/create/create.styles";
 import COLORS from "../constants/colors";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import Toast from "react-native-toast-message";
 
 export default function ImagePickerComponent({
   image,
@@ -25,10 +26,13 @@ export default function ImagePickerComponent({
           await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== "granted") {
-          Alert.alert(
-            "Permiso denegado",
-            "Es necesario el permiso para seleccionar la imagen"
-          );
+          Toast.show({
+            type: "error",
+            text1: "Permiso denegado",
+            text2: "Es necesario el permiso para seleccionar la imagen",
+            position: "top",
+            text1Style: { fontSize: 14 },
+          });
           return;
         }
       }
@@ -60,22 +64,29 @@ export default function ImagePickerComponent({
       }
     } catch (error) {
       console.log("Error selecting image: ", error);
-      Alert.alert("Error", "No se pudo seleccionar la imagen");
+      // Alert.alert("Error", "No se pudo seleccionar la imagen");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo seleccionar la imagen",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
     }
   };
 
   return (
-    <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+    <TouchableOpacity style={ImagePickerStyles.imagePicker} onPress={pickImage}>
       {image ? (
-        <Image source={{ uri: image }} style={styles.previewImage} />
+        <Image source={{ uri: image }} style={ImagePickerStyles.previewImage} />
       ) : (
-        <View style={styles.placeholderContainer}>
+        <View style={ImagePickerStyles.placeholderContainer}>
           <Ionicons
             name="image-outline"
             size={40}
             color={COLORS.textSecondary}
           />
-          <Text style={styles.placeholderText}>
+          <Text style={ImagePickerStyles.placeholderText}>
             Seleccionar una imagen
           </Text>
         </View>

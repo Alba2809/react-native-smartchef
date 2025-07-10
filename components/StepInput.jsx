@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, ToastAndroid } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import Toast from "react-native-toast-message";
-import styles from "../assets/styles/create.styles";
+import {
+  Steps as StepsStyles,
+  Buttons as ButtonsStyles,
+  Form as FormStyles,
+} from "../assets/styles/create/create.styles";
 import COLORS from "../constants/colors";
 
 export default function StepInput({ handleAddStep, totalSteps }) {
@@ -40,15 +44,13 @@ export default function StepInput({ handleAddStep, totalSteps }) {
   };
 
   return (
-    <View style={styles.stepContainer}>
-      <View style={styles.stepHeader}>
-        <Text style={styles.stepNumberText}>
-          Paso {number}
-        </Text>
-        <View style={styles.stepRightDuration}>
-          <View style={{...styles.stepDurationContainer, height: 40}}> 
+    <View style={StepsStyles.stepContainer}>
+      <View style={StepsStyles.stepHeader}>
+        <Text style={StepsStyles.stepNumberText}>Paso {number}</Text>
+        <View style={StepsStyles.stepRightDuration}>
+          <View style={{ ...StepsStyles.stepDurationContainer, height: 40 }}>
             <BottomSheetTextInput
-              style={{...styles.input, height: 40}}
+              style={{ ...FormStyles.input, height: 40 }}
               placeholderTextColor={COLORS.placeholderText}
               onChangeText={setDuration}
               placeholder="000000"
@@ -58,23 +60,25 @@ export default function StepInput({ handleAddStep, totalSteps }) {
               textAlign="center"
             />
           </View>
-          <Text style={styles.stepDurationText}>min</Text>
+          <Text style={StepsStyles.stepDurationText}>min</Text>
         </View>
       </View>
-      <BottomSheetTextInput
-        style={styles.textArea}
-        placeholderTextColor={COLORS.placeholderText}
-        placeholder="Describe tu preparación..."
-        textAlignVertical="top"
-        onChangeText={setText}
-        value={text}
-        multiline
-      />
+      <View style={FormStyles.textAreaContainer}>
+        <BottomSheetTextInput
+          style={FormStyles.textArea}
+          placeholderTextColor={COLORS.placeholderText}
+          placeholder="Describe tu preparación..."
+          textAlignVertical="top"
+          onChangeText={setText}
+          value={text}
+          multiline
+        />
+      </View>
       <TouchableOpacity
         onPress={saveStep}
-        style={{ ...styles.button, marginTop: 5 }}
+        style={{ ...ButtonsStyles.button, marginTop: 5 }}
       >
-        <Text style={styles.buttonText}>Guardar</Text>
+        <Text style={ButtonsStyles.buttonText}>Guardar</Text>
       </TouchableOpacity>
     </View>
   );

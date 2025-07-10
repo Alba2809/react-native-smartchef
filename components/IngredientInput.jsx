@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { View, TouchableOpacity, Text, ToastAndroid } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import styles from "../assets/styles/create.styles";
+import {
+  Ingredients as IngredientsStyles,
+  Buttons as ButtonsStyles,
+  Form as FormStyles,
+} from "../assets/styles/create/create.styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import COLORS from "../constants/colors";
 
@@ -20,7 +24,7 @@ export default function IngredientInput({ handleAddIngredient }) {
     /* Validate inputs */
     if (!name || !amount || !unit) {
       ToastAndroid.showWithGravity(
-        "Información incompleta", 
+        "Información incompleta",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
@@ -29,7 +33,7 @@ export default function IngredientInput({ handleAddIngredient }) {
 
     if (name.trim() === "" || amount <= 0 || unit === null) {
       ToastAndroid.showWithGravity(
-        "Información incompleta", 
+        "Información incompleta",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
@@ -46,20 +50,26 @@ export default function IngredientInput({ handleAddIngredient }) {
   };
 
   return (
-    <View style={styles.ingredientContainer}>
-      <View style={styles.inputContainer}>
+    <View style={IngredientsStyles.ingredientContainer}>
+      <View style={FormStyles.inputContainer}>
         <BottomSheetTextInput
-          style={styles.input}
+          style={FormStyles.input}
           placeholder="Nombre"
           placeholderTextColor={COLORS.placeholderText}
           value={name}
           onChangeText={setName}
         />
       </View>
-      <View style={styles.amountContainer}>
-        <View style={{ ...styles.inputContainer, maxWidth: 90, width: "100%" }}>
+      <View style={IngredientsStyles.amountContainer}>
+        <View
+          style={{
+            ...FormStyles.inputContainer,
+            maxWidth: 90,
+            width: "100%",
+          }}
+        >
           <BottomSheetTextInput
-            style={styles.ingredientInput}
+            style={IngredientsStyles.ingredientInput}
             placeholder="Cantidad"
             placeholderTextColor={COLORS.placeholderText}
             value={amount}
@@ -78,15 +88,15 @@ export default function IngredientInput({ handleAddIngredient }) {
             setValue={setUnit}
             placeholder="Unidad"
             listMode="MODAL"
-            style={styles.dropdown}
+            style={FormStyles.dropdown}
           />
         </View>
       </View>
       <TouchableOpacity
         onPress={saveIngredient}
-        style={{ ...styles.button, marginTop: 0 }}
+        style={{ ...ButtonsStyles.button, marginTop: 0 }}
       >
-        <Text style={styles.buttonText}>Guardar</Text>
+        <Text style={ButtonsStyles.buttonText}>Guardar</Text>
       </TouchableOpacity>
     </View>
   );

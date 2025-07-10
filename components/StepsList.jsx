@@ -2,14 +2,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
-  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import COLORS from "../constants/colors";
-import styles from "../assets/styles/create.styles";
-import ExpandableText from "./ExpandableText";
 import { useState } from "react";
+import { Steps as StepsStyles, Form as FormStyles } from "../assets/styles/create/create.styles";
+import COLORS from "../constants/colors";
+import ExpandableText from "./ExpandableText";
 
 export default function StepsList({ steps = [], handleRemoveStep, playStep = false }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -27,7 +25,7 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
         <View
           key={index}
           style={[
-            styles.stepContainer,
+            StepsStyles.stepContainer,
             {
               borderColor:
                 expandedIndex === index ? COLORS.primary : COLORS.border,
@@ -35,13 +33,13 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
           ]}
         >
           {/* Header */}
-          <View style={styles.stepHeader}>
-            <Text style={styles.stepNumberText}>
+          <View style={StepsStyles.stepHeader}>
+            <Text style={StepsStyles.stepNumberText}>
               {handleNumberOfStep(index, step.number)}
             </Text>
 
-            <View style={[styles.stepRightDuration, { gap: 12 }]}>
-              <Text style={styles.stepDurationText}>{step.duration} min</Text>
+            <View style={[StepsStyles.stepRightDuration, { gap: 12 }]}>
+              <Text style={StepsStyles.stepDurationText}>{step.duration} min</Text>
 
               {handleRemoveStep && (
                 <TouchableOpacity onPress={() => handleRemoveStep(index)}>
@@ -55,7 +53,7 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
 
               {
                 playStep && (
-                  <TouchableOpacity onPress={() => console.log("play step " + index)}>
+                  <TouchableOpacity>
                     <Ionicons
                       name="play"
                       size={20}
@@ -73,8 +71,8 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
             onToggle={() => onToggle(index)}
             isExpanded={expandedIndex === index}
             styles={{
-              container: styles.textAreaContainer,
-              text: styles.textArea,
+              container: [FormStyles.textAreaContainer, { paddingVertical: 5 }],
+              text: FormStyles.textArea,
             }}
           />
         </View>

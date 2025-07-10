@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import styles from "../assets/styles/create.styles";
+import COLORS from "../constants/colors";
 
 export default function CategoryPicker({ handleCategory, categoriesSelected }) {
   const catArray = [
@@ -33,23 +33,40 @@ export default function CategoryPicker({ handleCategory, categoriesSelected }) {
     <TouchableOpacity
       key={value._id}
       onPress={() => handleCategory(value._id)}
-      style={
-        categoriesSelected.includes(value._id)
-          ? styles.categoryButtonSelected
-          : styles.categoryButton
-      }
+      style={{
+        backgroundColor: COLORS.inputBackground,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        padding: 8,
+        borderColor: categoriesSelected.includes(value._id)
+          ? COLORS.primary
+          : COLORS.border,
+      }}
     >
       <Text
-        style={
-          categoriesSelected.includes(value._id)
-            ? styles.categoryTextSelected
-            : styles.categoryText
-        }
+        style={{
+          color: categoriesSelected.includes(value._id)
+            ? COLORS.primary
+            : COLORS.textDark,
+        }}
       >
         {value.name}
       </Text>
     </TouchableOpacity>
   ));
 
-  return <View style={styles.categoryContainer}>{options}</View>;
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      {options}
+    </View>
+  );
 }

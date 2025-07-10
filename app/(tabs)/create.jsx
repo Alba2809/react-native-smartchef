@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../../constants/colors";
-import styles from "../../assets/styles/create.styles";
+import { Buttons, Form, AIStyles, Base } from "../../assets/styles/create/create.styles";
 import ImagePickerComponent from "../../components/ImagePickerComponent";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
@@ -18,9 +18,9 @@ import useCreate from "../../hooks/useCreate";
 import useBottomSheet from "../../hooks/useBottomSheet";
 
 const RadioOption = (title, subtitle) => (
-  <View style={styles.textContainerRadio}>
-    <Text style={styles.titleRadio}>{title}</Text>
-    <Text style={styles.subtitleRadio}>{subtitle}</Text>
+  <View style={Buttons.textContainerRadio}>
+    <Text style={Buttons.titleRadio}>{title}</Text>
+    <Text style={Buttons.subtitleRadio}>{subtitle}</Text>
   </View>
 );
 
@@ -58,7 +58,7 @@ export default function create() {
 
     /* Bottom sheet manager */
     BottomSheetViews,
-    BottomSheetConfig
+    BottomSheetConfig,
   } = useCreate();
 
   const {
@@ -88,14 +88,14 @@ export default function create() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        contentContainerStyle={styles.container}
-        style={styles.scrollViewStyle}
+        contentContainerStyle={Base.container}
+        style={Base.scrollViewStyle}
         nestedScrollEnabled={true}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Crear Receta</Text>
-          <Text style={styles.subtitle}>
+        <View style={Base.header}>
+          <Text style={Base.title}>Crear Receta</Text>
+          <Text style={Base.subtitle}>
             Comparte tus recetas favoritas con los demás.
           </Text>
         </View>
@@ -105,26 +105,26 @@ export default function create() {
           colors={[COLORS.primary, COLORS.secondary]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
-          style={styles.containerAI}
+          style={AIStyles.containerAI}
         >
-          <View style={styles.textContainerAI}>
-            <Text style={styles.titleAI}>¿Necesitas ayuda?</Text>
-            <Text style={styles.subtitleAI}>
+          <View style={AIStyles.textContainerAI}>
+            <Text style={AIStyles.titleAI}>¿Necesitas ayuda?</Text>
+            <Text style={AIStyles.subtitleAI}>
               Utiliza una foto de la receta para registrar la información.
             </Text>
           </View>
-          <TouchableOpacity style={styles.buttonAI}>
+          <TouchableOpacity style={Buttons.buttonAI}>
             <Ionicons name="pencil-outline" size={15} color={COLORS.primary} />
-            <Text style={styles.buttonTextAI}>Rellenar con IA</Text>
+            <Text style={Buttons.buttonTextAI}>Rellenar con IA</Text>
           </TouchableOpacity>
         </LinearGradient>
 
-        <View style={styles.card}>
-          <Text style={styles.titleCard}>Información básica</Text>
+        <View style={Base.card}>
+          <Text style={Base.titleCard}>Información básica</Text>
           {/* Form */}
           {/* Imagen */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Foto de la receta</Text>
+          <View style={Form.formGroup}>
+            <Text style={Form.label}>Foto de la receta</Text>
             <ImagePickerComponent
               image={image}
               setImage={handleInputOnChange(filds.IMAGE)}
@@ -133,17 +133,17 @@ export default function create() {
           </View>
 
           {/* Title Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Título de la receta</Text>
-            <View style={styles.inputContainer}>
+          <View style={Form.formGroup}>
+            <Text style={Form.label}>Título de la receta</Text>
+            <View style={Form.inputContainer}>
               <Ionicons
                 name="fast-food-outline"
                 size={20}
                 color={COLORS.textSecondary}
-                style={styles.inputIcon}
+                style={Form.inputIcon}
               />
               <TextInput
-                style={styles.input}
+                style={Form.input}
                 placeholder="Ej. Pasta Carbonara Casera"
                 placeholderTextColor={COLORS.placeholderText}
                 value={title}
@@ -153,25 +153,27 @@ export default function create() {
           </View>
 
           {/* Description Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Descripción</Text>
-            <TextInput
-              style={styles.textArea}
-              placeholderTextColor={COLORS.placeholderText}
-              placeholder="Describe tu receta..."
-              onChangeText={handleInputOnChange(filds.DESCRIPTION)}
-              textAlignVertical="top"
-              value={description}
-              multiline
-            />
+          <View style={Form.formGroup}>
+            <Text style={Form.label}>Descripción</Text>
+            <View style={Form.textAreaContainer}>
+              <TextInput
+                style={Form.textArea}
+                placeholderTextColor={COLORS.placeholderText}
+                placeholder="Describe tu receta..."
+                onChangeText={handleInputOnChange(filds.DESCRIPTION)}
+                textAlignVertical="top"
+                value={description}
+                multiline
+              />
+            </View>
           </View>
 
           {/* Time Input */}
-          <View>
-            <Text style={styles.label}>Tiempo total (minutos)</Text>
-            <View style={styles.inputContainer}>
+          <View style={Form.formGroup}>
+            <Text style={Form.label}>Tiempo total (minutos)</Text>
+            <View style={Form.inputContainer}>
               <TextInput
-                style={styles.input}
+                style={Form.input}
                 placeholder="45"
                 placeholderTextColor={COLORS.placeholderText}
                 value={totalTime}
@@ -179,65 +181,65 @@ export default function create() {
                 keyboardType="numeric"
                 maxLength={4}
               />
-              <Text style={styles.label}>min</Text>
+              <Text style={Form.label}>min</Text>
             </View>
           </View>
         </View>
 
         {/* Categories bottom sheet */}
-        <View style={styles.card}>
-          <Text style={styles.titleCard}>Categorías</Text>
+        <View style={Base.card}>
+          <Text style={Base.titleCard}>Categorías</Text>
           <TouchableOpacity
-            style={styles.buttonSecondary}
+            style={Buttons.buttonSecondary}
             onPress={() => handlePresentModalPress(BottomSheetViews.CATEGORIES)}
           >
-            <Text style={styles.buttonText}>Seleccionar categorías</Text>
+            <Text style={Buttons.buttonText}>Seleccionar categorías</Text>
           </TouchableOpacity>
         </View>
 
         {/* Ingredientes */}
-        <View style={styles.card}>
-          <Text style={styles.titleCard}>Ingredientes</Text>
+        <View style={Base.card}>
+          <Text style={Base.titleCard}>Ingredientes</Text>
           <TouchableOpacity
-            style={{ ...styles.buttonSecondary, marginBottom: 5 }}
+            style={{ ...Buttons.buttonSecondary, marginBottom: 5 }}
             onPress={() =>
               handlePresentModalPress(BottomSheetViews.NEW_INGREDIENT)
             }
           >
-            <Text style={styles.buttonText}>Agregar ingrediente</Text>
+            <Text style={Buttons.buttonText}>Agregar ingrediente</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.buttonSecondary}
+            style={Buttons.buttonSecondary}
             onPress={() =>
               handlePresentModalPress(BottomSheetViews.INGREDIENTS)
             }
           >
-            <Text style={styles.buttonText}>Ver ingredientes</Text>
+            <Text style={Buttons.buttonText}>Ver ingredientes</Text>
           </TouchableOpacity>
         </View>
 
         {/* Steps */}
-        <View style={styles.card}>
-          <Text style={styles.titleCard}>Pasos de preparación</Text>
+        <View style={Base.card}>
+          <Text style={Base.titleCard}>Pasos de preparación</Text>
           <TouchableOpacity
-            style={{ ...styles.buttonSecondary, marginBottom: 5 }}
+            style={{ ...Buttons.buttonSecondary, marginBottom: 5 }}
             onPress={() => handlePresentModalPress(BottomSheetViews.NEW_STEP)}
           >
-            <Text style={styles.buttonText}>Agregar paso</Text>
+            <Text style={Buttons.buttonText}>Agregar paso</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.buttonSecondary}
+            style={Buttons.buttonSecondary}
             onPress={() => handlePresentModalPress(BottomSheetViews.STEPS)}
           >
-            <Text style={styles.buttonText}>Ver pasos</Text>
+            <Text style={Buttons.buttonText}>Ver pasos</Text>
           </TouchableOpacity>
         </View>
 
         {/* Status option */}
-        <View style={styles.card}>
-          <Text style={styles.titleCard}>Configuración de privacidad</Text>
+        <View style={Base.card}>
+          <Text style={Base.titleCard}>Configuración de privacidad</Text>
           <RadioButtonGroup
             selectedValue={status}
             onChange={setStatus}
@@ -261,16 +263,16 @@ export default function create() {
         </View>
 
         {/* Submit button */}
-        <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmit}>
-          <Text style={styles.buttonTextSubmit}>Guardar Receta</Text>
+        <TouchableOpacity style={Buttons.buttonSubmit} onPress={handleSubmit}>
+          <Text style={Buttons.buttonTextSubmit}>Guardar Receta</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.buttonPreview}
+          style={Buttons.buttonPreview}
           onPress={handlePreview}
           disabled={true}
         >
-          <Text style={styles.buttonTextPreview}>Vista previa</Text>
+          <Text style={Buttons.buttonTextPreview}>Vista previa</Text>
         </TouchableOpacity>
       </ScrollView>
 
