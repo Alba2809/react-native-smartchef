@@ -82,8 +82,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   userImage: {
-    width: 35,
-    height: 35,
+    width: 40,
+    height: 40,
+    backgroundColor: "white",
+    borderRadius: 100,
+    borderColor: COLORS.border,
+    borderWidth: 1,
   },
   userNameFor: {
     fontSize: 14,
@@ -149,6 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#718096",
     lineHeight: 22,
+    minHeight: 50,
   },
 
   /* Ingredients and steps */

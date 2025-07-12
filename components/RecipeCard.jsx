@@ -3,9 +3,18 @@ import COLORS from "../constants/colors";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-const RecipeCard = ({ item, showHeart = false }) => {
+const RecipeCard = ({ item, user = null, showHeart = false }) => {
   const redirectToRecipeDetails = (itemId) => {
     router.push(`/details/${itemId}`);
+  };
+
+  const usernameToShow = (recipeUsername) => {
+    if (user && recipeUsername) {
+      const isTheSameUser = user.username === recipeUsername;
+      return isTheSameUser ? `${recipeUsername} (Tú)` : recipeUsername;
+    }
+
+    return "Desconocido";
   };
 
   return (
@@ -26,7 +35,10 @@ const RecipeCard = ({ item, showHeart = false }) => {
           height: 200,
         }}
       >
-        <Image source={item.image} style={{ width: "100%", height: "100%" }} />
+        <Image
+          source={{ uri: item.image }}
+          style={{ width: "100%", height: "100%" }}
+        />
         <View
           style={{
             backgroundColor: COLORS.primary,
@@ -49,24 +61,7 @@ const RecipeCard = ({ item, showHeart = false }) => {
             {item.totalTime} min
           </Text>
         </View>
-        {/* <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            position: "absolute",
-            bottom: 10,
-            left: 10,
-            backgroundColor: COLORS.white,
-            borderRadius: 12,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-          }}
-        >
-          <Text style={{ fontSize: 14, fontWeight: "500" }}>
-            {item.user.username}
-          </Text>
-        </View> */}
+
         {showHeart && (
           <TouchableOpacity
             style={{
@@ -96,11 +91,24 @@ const RecipeCard = ({ item, showHeart = false }) => {
             fontWeight: "500",
             fontSize: 15,
             lineHeight: 22,
+            minHeight: 50,
           }}
           numberOfLines={6}
         >
           {item.description}
         </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Ionicons name="person" size={20} color="#718096" />
+          <Text style={{ fontSize: 14, fontWeight: "600", color: "#718096" }}>
+            {usernameToShow(item.user?.username)}
+          </Text>
+        </View>
         <View
           style={{
             borderTopWidth: 1,

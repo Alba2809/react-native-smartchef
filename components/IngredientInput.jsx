@@ -41,7 +41,7 @@ export default function IngredientInput({ handleAddIngredient }) {
     }
 
     /* Add ingredient */
-    handleAddIngredient({ name, amount, unit });
+    handleAddIngredient({ name: name.trim(), amount: +amount, unit });
 
     /* Reset inputs */
     setName("");

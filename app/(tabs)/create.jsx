@@ -10,7 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../../constants/colors";
-import { Buttons, Form, AIStyles, Base } from "../../assets/styles/create/create.styles";
+import {
+  Buttons,
+  Form,
+  AIStyles,
+  Base,
+} from "../../assets/styles/create/create.styles";
 import ImagePickerComponent from "../../components/ImagePickerComponent";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";

@@ -11,13 +11,17 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
+import useCategoryStore from "../../store/categoryStore";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
+import useRecipeStore from "../../store/recipeStore";
+import { useEffect } from "react";
 
 export default function index() {
-  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter } = useHome();
+  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter, allRecipes } = useHome();
+  const { categories } = useCategoryStore();
 
   const testRecipes = [
     {
@@ -168,10 +172,23 @@ export default function index() {
         </View>
         {/* </Animated.View> */}
 
+        {/* Empty list */}
+        {allRecipes.length === 0 && (
+          <View style={{
+          }}>
+            <Text style={{
+              fontSize: 14,
+              color: COLORS.textDark,
+            }}>
+              Aún no tienes ninguna receta guardada...
+            </Text>
+          </View>
+        )}
+
         {/* Recipes list */}
         <Animated.FlatList
-          data={testRecipes}
-          renderItem={({ item }) => <RecipeCard item={item} />}
+          data={allRecipes}
+          renderItem={({ item }) => <RecipeCard item={item} user={user} />}
           keyExtractor={(item, index) => index.toString()}
           scrollEventThrottle={16}
           /* onScroll={Animated.event(

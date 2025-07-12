@@ -1,35 +1,16 @@
 import { View, Text, TouchableOpacity } from "react-native";
+import useCategoryStore from "../store/categoryStore";
 import COLORS from "../constants/colors";
 
 export default function CategoryPicker({ handleCategory, categoriesSelected }) {
-  const catArray = [
-    {
-      _id: 1,
-      name: "Desayuno",
-    },
-    {
-      _id: 2,
-      name: "Comida",
-    },
-    {
-      _id: 3,
-      name: "Postre",
-    },
-    {
-      _id: 4,
-      name: "Pantry",
-    },
-    {
-      _id: 5,
-      name: "Comida rápida",
-    },
-    {
-      _id: 6,
-      name: "Bebida",
-    },
-  ];
+  const { categories } = useCategoryStore();
 
-  const options = catArray.map((value) => (
+  const capitalize = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  const options = categories.map((value) => (
     <TouchableOpacity
       key={value._id}
       onPress={() => handleCategory(value._id)}
@@ -51,7 +32,7 @@ export default function CategoryPicker({ handleCategory, categoriesSelected }) {
             : COLORS.textDark,
         }}
       >
-        {value.name}
+        {capitalize(value.name)}
       </Text>
     </TouchableOpacity>
   ));

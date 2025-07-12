@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import API_URL from "../constants/apiUrl";
+import { getCategoriesRequest } from "../api/category";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useCategoryStore = create((set) => ({
@@ -7,7 +7,7 @@ const useCategoryStore = create((set) => ({
 
   getCategories: async () => {
     try {
-      const res = await fetch(`${API_URL}/category`);
+      const res = await getCategoriesRequest();
 
       const data = await res.json();
 

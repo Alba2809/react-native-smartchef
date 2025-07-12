@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuthStore from "../store/authStore";
 import { Animated } from "react-native";
+import useRecipeStore from "../store/recipeStore";
 
 const FILTER_OPTIONS = {
   ALL: "Todas",
@@ -17,27 +18,43 @@ const FILTER_OPTIONS = {
  * }}
  */
 export default function useHome() {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const [baseFilter, setBaseFilter] = useState(FILTER_OPTIONS.ALL);
-  
-  /* const scrollY = new Animated.Value(0);
-  const diffClamp = Animated.diffClamp(scrollY, 0, 64);
-  const headerTranslateY = diffClamp.interpolate({
-    inputRange: [0, 64],
-    outputRange: [0, -64],
-  }); */
 
-  
+  const { getFavorites, getRecipesSaved, allRecipes } =
+    useRecipeStore();
+
+  // const allRecipes = formatRecipe();
+
+  useEffect(() => {
+    getFavorites(token);
+    getRecipesSaved();
+  }, []);
+
+  /* const formatRecipe = () => {
+    const all = [...get().recipesSaved, ...get().recipesAPI];
+    // delete duplicates by id
+    const unique = Array.from(new Map(all.map((r) => [r._id, r])).values());
+
+    // sort by createdAt descending
+    const sorted = unique.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
+
+    set({ allRecipes: sorted });
+  }; */
+
   return {
     user,
 
     /* Base filter tags */
     baseFilter,
     setBaseFilter,
-    FILTER_OPTIONS
+    FILTER_OPTIONS,
 
-    /* Animated scroll and hide */
-    /* scrollY,
-    headerTranslateY */
+    /* Recipes */
+    allRecipes,
   };
 }

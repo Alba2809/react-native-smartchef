@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { loginRequest, registerRequest } from "../api/auth";
+import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import API_URL from "../constants/apiUrl";
 
 const useAuthStore = create((set) => ({
   user: null,
@@ -11,25 +12,19 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
+      const res = await registerRequest({
+        username,
+        email,
+        password,
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        if(data.formErrors) {
+        if (data.formErrors) {
           return { success: false, error: data.formErrors };
         }
-        
+
         throw new Error(data.error || "Error al registrar");
       }
 
@@ -49,29 +44,28 @@ const useAuthStore = create((set) => ({
   login: async (email, password) => {
     try {
       set({ isLoading: true });
-      const res = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const res = await loginRequest({
+        email,
+        password,
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        if(data.formErrors) {
+        if (data.formErrors) {
           return { success: false, error: data.formErrors };
         }
-        
+
         throw new Error(data.error || "Error al registrar");
       }
 
       await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
+
+      /* Save the token expiration date */
+      const decoded = jwtDecode(data.token);
+      const expiration = decoded.exp * 1000;
+      await AsyncStorage.setItem("token_expiration", expiration.toString());
 
       set({ token: data.token, user: data.user });
 
@@ -99,12 +93,21 @@ const useAuthStore = create((set) => ({
       const token = await AsyncStorage.getItem("token");
       const userJson = await AsyncStorage.getItem("user");
       const user = userJson ? JSON.parse(userJson) : null;
+      const expiration = await AsyncStorage.getItem("token_expiration");
+      const now = Date.now();
 
-      set({ token, user });
+      if (expiration && now > parseInt(expiration)) {
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+        await AsyncStorage.removeItem("token_expiration");
+        set({ token: null, user: null });
+      } else {
+        set({ token, user });
+      }
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 }));
 
 export default useAuthStore;

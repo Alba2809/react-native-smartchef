@@ -42,23 +42,22 @@ export default function ImagePickerComponent({
         mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.5, // lower quality for smaller base64
+        quality: 0.5,
         base64: true,
       });
 
       if (!result.canceled) {
-        setImage(result.assets[0].uri);
+        const asset = result.assets[0];
+
+        setImage(asset.uri);
 
         // if base64 is provided, use it
-        if (result.assets[0].base64) {
-          setImageBase64(result.assets[0].base64);
+        if (asset.base64) {
+          setImageBase64(asset.base64);
         } else {
-          const base64 = await FileSystem.readAsStringAsync(
-            result.assets[0].uri,
-            {
-              encoding: "base64",
-            }
-          );
+          const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+            encoding: "base64",
+          });
           setImageBase64(base64);
         }
       }
@@ -76,7 +75,11 @@ export default function ImagePickerComponent({
   };
 
   return (
-    <TouchableOpacity style={ImagePickerStyles.imagePicker} onPress={pickImage}>
+    <TouchableOpacity
+      style={ImagePickerStyles.imagePicker}
+      onPress={pickImage}
+      accessibilityLabel="Selector de imagen"
+    >
       {image ? (
         <Image source={{ uri: image }} style={ImagePickerStyles.previewImage} />
       ) : (

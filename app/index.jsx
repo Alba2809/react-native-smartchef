@@ -1,17 +1,24 @@
-import LoadingPage from "@/components/LoadingPage";
-import useAuthStore from "@/store/authStore";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import LoadingPage from "@/components/LoadingPage";
+import useAuthStore from "@/store/authStore";
+import useCategoryStore from "@/store/categoryStore";
 
 export default function Initializer() {
-  const router = useRouter();
   const { checkAuth, user, token } = useAuthStore();
+  const { getCategories } = useCategoryStore();
+  const router = useRouter();
 
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const init = async () => {
+      // check if user is logged in
       await checkAuth();
+
+      // get categories
+      await getCategories();
+
       setIsReady(true);
     };
     init();
