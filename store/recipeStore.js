@@ -70,7 +70,6 @@ const useRecipeStore = create((set, get) => ({
   },
 
   formatRecipes: () => {
-    console.log("format recipes");
     const all = [...get().recipesSaved, ...get().recipesAPI];
     // delete duplicates by id
     const unique = Array.from(new Map(all.map((r) => [r._id, r])).values());

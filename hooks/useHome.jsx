@@ -21,14 +21,15 @@ export default function useHome() {
   const { user, token } = useAuthStore();
   const [baseFilter, setBaseFilter] = useState(FILTER_OPTIONS.ALL);
 
-  const { getFavorites, getRecipesSaved, allRecipes } =
-    useRecipeStore();
+  const { getFavorites, getRecipesSaved, allRecipes } = useRecipeStore();
 
   // const allRecipes = formatRecipe();
 
   useEffect(() => {
-    getFavorites(token);
-    getRecipesSaved();
+    Promise.all([
+      getFavorites(token),
+      getRecipesSaved(),
+    ]);
   }, []);
 
   /* const formatRecipe = () => {

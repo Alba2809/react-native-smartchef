@@ -10,9 +10,7 @@ import {
   FlatList,
 } from "react-native";
 import COLORS from "../../constants/colors";
-import { router } from "expo-router";
 import RecipeCard from "../../components/RecipeCard";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function search() {
   const testRecipes = [
@@ -21,11 +19,11 @@ export default function search() {
       title: "Pasta Casbonara Clásica",
       description:
         "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
+      image: "../../assets/images/pasta.jpeg",
       totalTime: 10,
       ingredients: ["Tomate", "Agua"],
       steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
+      categories: ["Entrantes", "Categoria 2", "Categoria 3", "Categoria 4"],
       user: {
         username: "John Doe",
       },
@@ -35,7 +33,7 @@ export default function search() {
       title: "Pasta Casbonara Clásica",
       description:
         "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
+      image: "../../assets/images/pasta.jpeg",
       totalTime: 10,
       ingredients: ["Tomate", "Agua"],
       steps: ["Paso 1", "Paso 2", "Paso 3"],
@@ -49,7 +47,7 @@ export default function search() {
       title: "Pasta Casbonara Clásica",
       description:
         "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
+      image: "../../assets/images/pasta.jpeg",
       totalTime: 10,
       ingredients: ["Tomate", "Agua"],
       steps: ["Paso 1", "Paso 2", "Paso 3"],

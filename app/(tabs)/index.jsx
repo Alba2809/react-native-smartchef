@@ -16,14 +16,11 @@ import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
-import useRecipeStore from "../../store/recipeStore";
-import { useEffect } from "react";
 
 export default function index() {
   const { user, baseFilter, FILTER_OPTIONS, setBaseFilter, allRecipes } = useHome();
-  const { categories } = useCategoryStore();
 
-  const testRecipes = [
+  /* const testRecipes = [
     {
       _id: 1,
       title: "Pasta Casbonara Clásica",
@@ -66,7 +63,7 @@ export default function index() {
         username: "John Doe",
       },
     },
-  ];
+  ]; */
 
   return (
     <KeyboardAvoidingView

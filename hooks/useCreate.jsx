@@ -175,6 +175,7 @@ export default function useCreate() {
           ...dataFormatted,
           createdAt: currentDate.toISOString(),
           updatedAt: currentDate.toISOString(),
+          type: "local",
           user,
         },
         image,
