@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
+import { useEffect, useRef } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
@@ -18,52 +19,15 @@ import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
 
 export default function index() {
-  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter, allRecipes } = useHome();
+  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter, allRecipes } =
+    useHome();
+  const flatListRef = useRef(null);
 
-  /* const testRecipes = [
-    {
-      _id: 1,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
-      user: {
-        username: "John Doe",
-      },
-    },
-    {
-      _id: 2,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
-      user: {
-        username: "John Doe",
-      },
-    },
-    {
-      _id: 3,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: require("../../assets/images/pasta.jpeg"),
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
-      user: {
-        username: "John Doe",
-      },
-    },
-  ]; */
+  useEffect(() => {
+    if (allRecipes.length > 0 && flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [allRecipes]);
 
   return (
     <KeyboardAvoidingView
@@ -72,29 +36,10 @@ export default function index() {
     >
       <View style={styles.container}>
         {/* Header */}
-        {/* <Animated.View
-          style={{
-            position: "absolute",
-            flexDirection: "column",
-            backgroundColor: COLORS.background,
-            gap: 8,
-            top: 0,
-            right: 16,
-            left: 16,
-            paddingBottom: 12,
-            zIndex: 1,
-            transform: [
-              {
-                translateY: headerTranslateY,
-              },
-            ],
-          }}
-        > */}
         <LinearGradient
           colors={[COLORS.primary, COLORS.secondary]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
-          // style={styles.containerAI}
           style={styles.linearGradient}
         >
           <View style={styles.headerLeftContainer}>
@@ -115,10 +60,7 @@ export default function index() {
               size={24}
               color={COLORS.border}
             />
-            <Image
-              source={user.avatar}
-              style={styles.headerUserIcon}
-            />
+            <Image source={user.avatar} style={styles.headerUserIcon} />
           </View>
         </LinearGradient>
 
@@ -167,16 +109,16 @@ export default function index() {
             })}
           </View>
         </View>
-        {/* </Animated.View> */}
 
         {/* Empty list */}
         {allRecipes.length === 0 && (
-          <View style={{
-          }}>
-            <Text style={{
-              fontSize: 14,
-              color: COLORS.textDark,
-            }}>
+          <View style={{}}>
+            <Text
+              style={{
+                fontSize: 14,
+                color: COLORS.textDark,
+              }}
+            >
               Aún no tienes ninguna receta guardada...
             </Text>
           </View>
@@ -184,14 +126,11 @@ export default function index() {
 
         {/* Recipes list */}
         <Animated.FlatList
+          ref={flatListRef}
           data={allRecipes}
           renderItem={({ item }) => <RecipeCard item={item} user={user} />}
           keyExtractor={(item, index) => index.toString()}
           scrollEventThrottle={16}
-          /* onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )} */
           style={{ flex: 1, borderRadius: 14, paddingBottom: 10 }}
           contentContainerStyle={{ gap: 20 }}
         />

@@ -54,6 +54,7 @@ const useRecipeStore = create((set, get) => ({
       );
 
       set({ recipesSaved: [data, ...recipesSaved] });
+      get().formatRecipes();
     } catch (error) {
       console.log(error);
     }

@@ -21,6 +21,7 @@ import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
 import useCreate from "../../hooks/useCreate";
 import useBottomSheet from "../../hooks/useBottomSheet";
+import { useEffect } from "react";
 
 const RadioOption = (title, subtitle) => (
   <View style={Buttons.textContainerRadio}>
@@ -86,6 +87,10 @@ export default function create() {
       totalSteps: steps.length || 0,
     },
   });
+
+  useEffect(() => {
+    console.log("Create render");
+  }, []);
 
   return (
     <KeyboardAvoidingView

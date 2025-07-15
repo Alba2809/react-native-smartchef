@@ -32,21 +32,6 @@ export default function useHome() {
     ]);
   }, []);
 
-  /* const formatRecipe = () => {
-    const all = [...get().recipesSaved, ...get().recipesAPI];
-    // delete duplicates by id
-    const unique = Array.from(new Map(all.map((r) => [r._id, r])).values());
-
-    // sort by createdAt descending
-    const sorted = unique.sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return dateB - dateA;
-    });
-
-    set({ allRecipes: sorted });
-  }; */
-
   return {
     user,
 
