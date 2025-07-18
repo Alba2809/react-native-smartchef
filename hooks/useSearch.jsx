@@ -60,12 +60,6 @@ export default function useSearch() {
     [token, page, hasMore, loading, filtersState.name, filtersState.categories]
   );
 
-  // first load recipes
-  // reset recipes when filters change
-  useEffect(() => {
-    loadRecipes({ firstLoad: true });
-  }, []);
-
   const handleInputOnChange = (key) => (value) => {
     updateFilters({ [key]: value });
   };

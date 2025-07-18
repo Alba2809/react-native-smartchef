@@ -13,10 +13,15 @@ import {
 import COLORS from "../../constants/colors";
 import RecipeCard from "../../components/RecipeCard";
 import useSearch from "../../hooks/useSearch";
+import { useEffect } from "react";
 
 export default function search() {
   const { recipes, loading, loadRecipes, filtersState, handleInputOnChange } =
     useSearch();
+
+  useEffect(() => {
+    loadRecipes({ firstLoad: true });
+  }, []);
 
   return (
     <KeyboardAvoidingView
