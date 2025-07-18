@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getFavoritesRequest } from "../api/recipe";
+import { getFavoritesRequest } from "../api/favorite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useRecipeStore = create((set, get) => ({

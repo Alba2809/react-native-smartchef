@@ -8,55 +8,15 @@ import {
   TextInput,
   Image,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import COLORS from "../../constants/colors";
 import RecipeCard from "../../components/RecipeCard";
+import useSearch from "../../hooks/useSearch";
 
 export default function search() {
-  const testRecipes = [
-    {
-      _id: 1,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: "../../assets/images/pasta.jpeg",
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Categoria 2", "Categoria 3", "Categoria 4"],
-      user: {
-        username: "John Doe",
-      },
-    },
-    {
-      _id: 2,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: "../../assets/images/pasta.jpeg",
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
-      user: {
-        username: "John Doe",
-      },
-    },
-    {
-      _id: 3,
-      title: "Pasta Casbonara Clásica",
-      description:
-        "Una receta de pan con tomate, una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate una receta de pan con tomate",
-      image: "../../assets/images/pasta.jpeg",
-      totalTime: 10,
-      ingredients: ["Tomate", "Agua"],
-      steps: ["Paso 1", "Paso 2", "Paso 3"],
-      categories: ["Entrantes", "Recetas de cocina"],
-      user: {
-        username: "John Doe",
-      },
-    },
-  ];
+  const { recipes, loading, loadRecipes, filtersState, handleInputOnChange } =
+    useSearch();
 
   return (
     <KeyboardAvoidingView
@@ -66,7 +26,7 @@ export default function search() {
         backgroundColor: COLORS.background,
         padding: 16,
         fontFamily: "JetBrainsMono-Medium",
-        gap: 10
+        gap: 10,
       }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
@@ -106,6 +66,9 @@ export default function search() {
               color: "black",
               flex: 1,
             }}
+            value={filtersState.name}
+            onChangeText={handleInputOnChange("name")}
+            onEndEditing={loadRecipes}
             placeholder="Buscar receta..."
             placeholderTextColor="gray"
           />
@@ -128,7 +91,7 @@ export default function search() {
             fontSize: 18,
             fontWeight: "bold",
             color: COLORS.black,
-            paddingHorizontal: 10
+            paddingHorizontal: 10,
           }}
         >
           Resultados de búsqueda
@@ -139,29 +102,37 @@ export default function search() {
             fontWeight: "500",
             color: COLORS.textSecondary,
             marginBottom: 10,
-            paddingHorizontal: 10
+            paddingHorizontal: 10,
           }}
         >
-          {testRecipes.length} recetas encontradas
+          {recipes.length} recetas encontradas
         </Text>
 
-        {
-          testRecipes.length === 0 && (
-            <Text
-              style={{
-                fontSize: 15,
-                color: COLORS.textSecondary,
-                paddingHorizontal: 10,
-              }}
-            >
-              No se han encontrado resultados...
-            </Text>
-          )
-        }
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color={COLORS.primary}
+            style={{
+              alignSelf: "center",
+            }}
+          />
+        )}
+
+        {recipes.length === 0 && (
+          <Text
+            style={{
+              fontSize: 15,
+              color: COLORS.textSecondary,
+              paddingHorizontal: 10,
+            }}
+          >
+            No se han encontrado resultados...
+          </Text>
+        )}
 
         {/* List */}
         <FlatList
-          data={testRecipes}
+          data={recipes}
           renderItem={({ item }) => <RecipeCard item={item} showHeart={true} />}
           keyExtractor={(item, index) => index.toString()}
           style={{
@@ -170,6 +141,11 @@ export default function search() {
             paddingHorizontal: 10,
           }}
           contentContainerStyle={{ gap: 20 }}
+          onEndReached={loadRecipes}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loading && <ActivityIndicator size="small" color={COLORS.primary} />
+          }
         />
 
         {/* Fade bottom */}

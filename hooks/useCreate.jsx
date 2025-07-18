@@ -173,6 +173,7 @@ export default function useCreate() {
         {
           _id: currentDate.getTime(),
           ...dataFormatted,
+          favoriteCount: 0,
           createdAt: currentDate.toISOString(),
           updatedAt: currentDate.toISOString(),
           type: "local",

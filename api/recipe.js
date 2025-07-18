@@ -10,15 +10,6 @@ export const createRecipe = async (data, token) =>
     body: JSON.stringify(data),
   });
 
-export const getFavoritesRequest = async (token) =>
-  fetch(`${API_URL}/recipe/favorites`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
 export const getRecipeRequest = async (token, recipeId) =>
   fetch(`${API_URL}/recipe/${recipeId}`, {
     method: "GET",
@@ -27,3 +18,29 @@ export const getRecipeRequest = async (token, recipeId) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const getRecipesRequest = async ({
+  token,
+  page = 1,
+  limit = 10,
+  name = "",
+  categories = [],
+}) => {
+  const params = new URLSearchParams({
+    page: page,
+    limit: limit,
+    name: name,
+  });
+
+  categories.forEach((category, index) => {
+    params.append("categories", category);
+  });
+
+  return fetch(`${API_URL}/recipe?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
