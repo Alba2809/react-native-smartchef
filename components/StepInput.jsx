@@ -35,7 +35,7 @@ export default function StepInput({ handleAddStep, totalSteps }) {
     }
 
     /* Add step */
-    handleAddStep({ text: text.trim(), duration: +duration, number: +number });
+    handleAddStep({ text: text.trim(), duration: parseInt(duration), number: +number });
 
     /* Reset inputs */
     setText("");

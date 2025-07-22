@@ -8,6 +8,7 @@ import {
 } from "../assets/styles/create/create.styles";
 import DropDownPicker from "react-native-dropdown-picker";
 import COLORS from "../constants/colors";
+import Toast from "react-native-toast-message";
 
 export default function IngredientInput({ handleAddIngredient }) {
   const [name, setName] = useState("");
@@ -15,33 +16,37 @@ export default function IngredientInput({ handleAddIngredient }) {
   const [unit, setUnit] = useState(null);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
-    { label: "Gramos", value: "gr" },
-    { label: "Litros", value: "ltr" },
-    { label: "Piezas", value: "piezas" },
+    { label: "gramos", value: "g" },
+    { label: "kilogramos", value: "kg" },
+    { label: "mililitros", value: "ml" },
+    { label: "litros", value: "l" },
+    { label: "piezas", value: "pz" },
+    { label: "tazas", value: "taza" },
+    { label: "cucharadas", value: "cda" },
+    { label: "cucharaditas", value: "cdta" },
+    { label: "rebanadas", value: "rebanada" },
+    { label: "dientes", value: "diente" },
+    { label: "hojas", value: "hoja" },
+    { label: "ramas", value: "rama" },
+    { label: "pellizcos", value: "pellizco" },
+    { label: "pizcas", value: "pizca" },
+    { label: "unidad", value: "u" },
   ]);
 
   const saveIngredient = () => {
     /* Validate inputs */
-    if (!name || !amount || !unit) {
-      ToastAndroid.showWithGravity(
-        "Información incompleta",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
-      return;
-    }
-
-    if (name.trim() === "" || amount <= 0 || unit === null) {
-      ToastAndroid.showWithGravity(
-        "Información incompleta",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
+    if (!name || !amount || !unit || amount <= 0 || name.trim() === "") {
+      Toast.show({
+        type: "error",
+        text1: "Información incompleta",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
       return;
     }
 
     /* Add ingredient */
-    handleAddIngredient({ name: name.trim(), amount: +amount, unit });
+    handleAddIngredient({ name: name.trim(), amount: amount, unit });
 
     /* Reset inputs */
     setName("");

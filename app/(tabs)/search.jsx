@@ -16,8 +16,15 @@ import useSearch from "../../hooks/useSearch";
 import { useEffect } from "react";
 
 export default function search() {
-  const { recipes, loading, loadRecipes, filtersState, handleInputOnChange } =
-    useSearch();
+  const {
+    recipes,
+    loading,
+    loadRecipes,
+    filtersState,
+    handleInputOnChange,
+    hasMore,
+    totalRecipes,
+  } = useSearch();
 
   useEffect(() => {
     loadRecipes({ firstLoad: true });
@@ -110,7 +117,7 @@ export default function search() {
             paddingHorizontal: 10,
           }}
         >
-          {recipes.length} recetas encontradas
+          {totalRecipes} recetas encontradas
         </Text>
 
         {loading && (
@@ -146,7 +153,11 @@ export default function search() {
             paddingHorizontal: 10,
           }}
           contentContainerStyle={{ gap: 20 }}
-          onEndReached={loadRecipes}
+          onEndReached={() => {
+            if (!loading && hasMore) {
+              loadRecipes({});
+            }
+          }}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
             loading && <ActivityIndicator size="small" color={COLORS.primary} />

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { getRecipesRequest } from "../api/recipe";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
@@ -32,16 +32,20 @@ export default function useSearch() {
           name: filtersState.name,
           categories: filtersState.categories,
         });
+
         const data = await res.json();
 
         if (res.ok) {
+          // if first load, set recipes state
+          // else add new recipes to recipes state
           if (firstLoad) {
             setRecipes(data.recipes);
           } else {
             setRecipes((prev) => [...prev, ...data.recipes]);
           }
+
           setHasMore(page < data.totalPages);
-          setPage((prev) => prev + 1);
+          setPage(page + 1);
           setTotalRecipes(data.totalRecipes);
         }
       } catch (error) {
@@ -57,7 +61,7 @@ export default function useSearch() {
         setLoading(false);
       }
     },
-    [token, page, hasMore, loading, filtersState.name, filtersState.categories]
+    [token, hasMore, loading, filtersState.name, filtersState.categories]
   );
 
   const handleInputOnChange = (key) => (value) => {
@@ -68,6 +72,7 @@ export default function useSearch() {
     // recipes state
     recipes,
     loading,
+    totalRecipes,
 
     // filters state
     filtersState,
@@ -75,5 +80,6 @@ export default function useSearch() {
 
     // functions to load recipes
     loadRecipes,
+    hasMore
   };
 }

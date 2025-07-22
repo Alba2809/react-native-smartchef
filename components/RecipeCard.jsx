@@ -7,12 +7,12 @@ import {
   View,
 } from "react-native";
 import COLORS from "../constants/colors";
-import { router, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import useCategoryStore from "../store/categoryStore";
-import React, { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo, memo } from "react";
 
-const RecipeCard = React.memo(({ item, user = null, showHeart = false }) => {
+const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
   const { categories } = useCategoryStore();
   const router = useRouter();
 
@@ -61,17 +61,20 @@ const RecipeCard = React.memo(({ item, user = null, showHeart = false }) => {
   );
 });
 
-const CategoriesName = React.memo(
+const CategoriesName = memo(
   ({ recipeCategories, categoriesArray }) => {
+    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
     const itemsToShow = useMemo(() => {
       return recipeCategories
-        .map((cat) => {
-          const found = categoriesArray.find(
-            (c) => c._id.toString() === cat.toString()
-          );
-          return found
-            ? found.name.charAt(0).toUpperCase() + found.name.slice(1)
-            : null;
+        .map((recipeCategory) => {
+          const name =
+            recipeCategory?.name ??
+            categoriesArray.find(
+              (c) => c._id.toString() === recipeCategory.toString()
+            )?.name;
+
+          return name ? capitalize(name) : null;
         })
         .filter(Boolean);
     }, [recipeCategories, categoriesArray]);
