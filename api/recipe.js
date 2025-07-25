@@ -23,13 +23,13 @@ export const getRecipesRequest = async ({
   token,
   page = 1,
   limit = 10,
-  name = "",
+  title = "",
   categories = [],
 }) => {
   const params = new URLSearchParams({
     page: page,
     limit: limit,
-    name: name,
+    title: title,
   });
 
   categories.forEach((category, index) => {

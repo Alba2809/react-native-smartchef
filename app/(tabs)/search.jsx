@@ -6,29 +6,37 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   TextInput,
-  Image,
   FlatList,
   ActivityIndicator,
 } from "react-native";
 import COLORS from "../../constants/colors";
 import RecipeCard from "../../components/RecipeCard";
 import useSearch from "../../hooks/useSearch";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 export default function search() {
   const {
     recipes,
     loading,
-    loadRecipes,
+    totalRecipes,
+    flatListRef,
+
     filtersState,
     handleInputOnChange,
+
+    loadRecipes,
+    applyFilters,
     hasMore,
-    totalRecipes,
   } = useSearch();
 
   useEffect(() => {
-    loadRecipes({ firstLoad: true });
+    loadRecipes({ refresh: true });
   }, []);
+
+  const renderRecipeItem = useCallback(
+    ({ item }) => <RecipeCard item={item} showHeart={true} />,
+    []
+  );
 
   return (
     <KeyboardAvoidingView
@@ -70,7 +78,7 @@ export default function search() {
             paddingHorizontal: 8,
           }}
         >
-          <Ionicons name="search-outline" size={20} />
+          <Ionicons name="search-outline" size={20} onPress={applyFilters} />
           <TextInput
             style={{
               fontSize: 14,
@@ -78,9 +86,9 @@ export default function search() {
               color: "black",
               flex: 1,
             }}
-            value={filtersState.name}
-            onChangeText={handleInputOnChange("name")}
-            onEndEditing={loadRecipes}
+            value={filtersState.title}
+            onChangeText={handleInputOnChange("title")}
+            onEndEditing={applyFilters}
             placeholder="Buscar receta..."
             placeholderTextColor="gray"
           />
@@ -144,9 +152,10 @@ export default function search() {
 
         {/* List */}
         <FlatList
+          ref={flatListRef}
           data={recipes}
-          renderItem={({ item }) => <RecipeCard item={item} showHeart={true} />}
-          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderRecipeItem}
+          keyExtractor={(item) => item._id}
           style={{
             flex: 1,
             borderRadius: 14,
@@ -155,7 +164,7 @@ export default function search() {
           contentContainerStyle={{ gap: 20 }}
           onEndReached={() => {
             if (!loading && hasMore) {
-              loadRecipes({});
+              loadRecipes();
             }
           }}
           onEndReachedThreshold={0.5}

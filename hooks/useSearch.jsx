@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useReducer, useRef, useState } from "react";
 import { getRecipesRequest } from "../api/recipe";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
@@ -13,23 +13,28 @@ export default function useSearch() {
   const [filtersState, updateFilters] = useReducer(
     (prev, next) => ({ ...prev, ...next }),
     {
-      name: "",
+      title: "",
       categories: [],
     }
   );
+  const flatListRef = useRef(null);
 
   const loadRecipes = useCallback(
-    async ({ firstLoad = false }) => {
+    async ({ refresh = false, resetHasMore = false } = {}) => {
       try {
-        if (!hasMore || loading) return;
+        const currentHasMore = resetHasMore ? true : hasMore;
+        // if no more recipes or loading or is not the first load, return
+        if (!currentHasMore || loading) return;
 
         setLoading(true);
 
+        const currentPage = refresh ? 1 : page;
+
         const res = await getRecipesRequest({
           token,
-          page,
+          page: currentPage,
           limit: 10,
-          name: filtersState.name,
+          title: filtersState.title || "",
           categories: filtersState.categories,
         });
 
@@ -38,15 +43,16 @@ export default function useSearch() {
         if (res.ok) {
           // if first load, set recipes state
           // else add new recipes to recipes state
-          if (firstLoad) {
+          if (refresh) {
+            flatListRef.current.scrollToOffset({ offset: 0 });
             setRecipes(data.recipes);
           } else {
             setRecipes((prev) => [...prev, ...data.recipes]);
           }
 
           setHasMore(page < data.totalPages);
-          setPage(page + 1);
           setTotalRecipes(data.totalRecipes);
+          setPage(page + 1);
         }
       } catch (error) {
         console.log(error);
@@ -61,8 +67,12 @@ export default function useSearch() {
         setLoading(false);
       }
     },
-    [token, hasMore, loading, filtersState.name, filtersState.categories]
+    [token, page, loading, hasMore, filtersState]
   );
+
+  const applyFilters = () => {
+    loadRecipes({ refresh: true, resetHasMore: true });
+  };
 
   const handleInputOnChange = (key) => (value) => {
     updateFilters({ [key]: value });
@@ -73,6 +83,7 @@ export default function useSearch() {
     recipes,
     loading,
     totalRecipes,
+    flatListRef,
 
     // filters state
     filtersState,
@@ -80,6 +91,7 @@ export default function useSearch() {
 
     // functions to load recipes
     loadRecipes,
-    hasMore
+    applyFilters,
+    hasMore,
   };
 }

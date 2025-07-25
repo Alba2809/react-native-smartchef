@@ -29,11 +29,22 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
         <View style={styles.timeBadge}>
           <Text style={styles.timeText}>{item.totalTime} min</Text>
         </View>
-        {showHeart && (
-          <TouchableOpacity style={styles.heartButton}>
-            <Ionicons name="heart-outline" size={23} color="gray" />
-          </TouchableOpacity>
+        {showHeart && item.isFavorite && (
+          <View style={styles.heartButton}>
+            <Ionicons name="heart" size={23} color="red" />
+          </View>
         )}
+        {/* <View style={{
+          position: "absolute",
+          bottom: 10,
+          left: 10,
+          backgroundColor: "#e9e9e8",
+          borderRadius: 100,
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+        }}>
+          <Text>{item.user.username}</Text>
+        </View> */}
       </View>
 
       {/* Contenido */}
@@ -61,10 +72,10 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
   );
 });
 
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
 const CategoriesName = memo(
   ({ recipeCategories, categoriesArray }) => {
-    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-
     const itemsToShow = useMemo(() => {
       return recipeCategories
         .map((recipeCategory) => {
@@ -93,14 +104,9 @@ const CategoriesName = memo(
       </ScrollView>
     );
   },
-  (prevProps, nextProps) => {
-    return (
-      JSON.stringify(prevProps.recipeCategories) ===
-        JSON.stringify(nextProps.recipeCategories) &&
-      JSON.stringify(prevProps.categoriesArray) ===
-        JSON.stringify(nextProps.categoriesArray)
-    );
-  }
+  (prevProps, nextProps) =>
+    prevProps.recipeCategories === nextProps.recipeCategories &&
+    prevProps.categoriesArray === nextProps.categoriesArray
 );
 
 const styles = StyleSheet.create({
