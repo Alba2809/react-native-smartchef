@@ -20,14 +20,14 @@ export default function CategoryPicker({ handleCategory, categoriesSelected }) {
         borderWidth: 1,
         borderColor: COLORS.border,
         padding: 8,
-        borderColor: categoriesSelected.includes(value._id)
+        borderColor: categoriesSelected?.includes(value._id)
           ? COLORS.primary
           : COLORS.border,
       }}
     >
       <Text
         style={{
-          color: categoriesSelected.includes(value._id)
+          color: categoriesSelected?.includes(value._id)
             ? COLORS.primary
             : COLORS.textDark,
         }}

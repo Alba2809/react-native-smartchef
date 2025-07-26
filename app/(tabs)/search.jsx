@@ -9,10 +9,12 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
+import { useCallback, useEffect } from "react";
 import COLORS from "../../constants/colors";
 import RecipeCard from "../../components/RecipeCard";
 import useSearch from "../../hooks/useSearch";
-import { useCallback, useEffect } from "react";
+import BottomSheetManager from "../../components/BottomSheetManager";
+import useBottomSheet from "../../hooks/useBottomSheet";
 
 export default function search() {
   const {
@@ -23,11 +25,33 @@ export default function search() {
 
     filtersState,
     handleInputOnChange,
+    handleCategory,
 
     loadRecipes,
     applyFilters,
     hasMore,
+
+    BottomSheetConfig,
+    BottomSheetViews,
   } = useSearch();
+
+  const {
+    currentBsConfig,
+    bottomSheetRef,
+    bottomSheetContent,
+    handlePresentModalPress,
+  } = useBottomSheet({
+    BottomSheetViews,
+    BottomSheetConfig,
+    dataProps: {
+      applyFilters: () => {
+        bottomSheetRef.current.close();
+        applyFilters();
+      },
+      handleCategory,
+      categories: filtersState.categories,
+    },
+  });
 
   useEffect(() => {
     loadRecipes({ refresh: true });
@@ -92,7 +116,7 @@ export default function search() {
             placeholder="Buscar receta..."
             placeholderTextColor="gray"
           />
-          <TouchableOpacity style={{}}>
+          <TouchableOpacity style={{}} onPress={() => handlePresentModalPress(BottomSheetViews.FILTERS)}>
             <Ionicons name="filter-outline" size={20} />
           </TouchableOpacity>
         </View>
@@ -155,7 +179,8 @@ export default function search() {
           ref={flatListRef}
           data={recipes}
           renderItem={renderRecipeItem}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item._id.toString()}
+          initialNumToRender={10}
           style={{
             flex: 1,
             borderRadius: 14,
@@ -168,25 +193,17 @@ export default function search() {
             }
           }}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            loading && <ActivityIndicator size="small" color={COLORS.primary} />
-          }
         />
 
-        {/* Fade bottom */}
-        {/* <LinearGradient
-          colors={["transparent", COLORS.background]}
-          locations={[0.3, 1]}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 30,
-            zIndex: 2,
-          }}
-          pointerEvents="none"
-         /> */}
+        {currentBsConfig && (
+          <BottomSheetManager
+            bottomSheetRef={bottomSheetRef}
+            title={currentBsConfig.title}
+            snapPoints={currentBsConfig.snapPoints}
+          >
+            {bottomSheetContent}
+          </BottomSheetManager>
+        )}
       </View>
     </KeyboardAvoidingView>
   );

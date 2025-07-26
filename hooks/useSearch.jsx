@@ -2,6 +2,25 @@ import { useCallback, useReducer, useRef, useState } from "react";
 import { getRecipesRequest } from "../api/recipe";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
+import CategoryFilter from "../components/CategoryFilter";
+
+const BottomSheetViews = {
+  FILTERS: "FILTERS",
+};
+
+const BottomSheetConfig = {
+  [BottomSheetViews.FILTERS]: {
+    title: "Filtrar por categorías",
+    snapPoints: ["40%"],
+    content: (props) => (
+      <CategoryFilter
+        handleCategory={props.handleCategory}
+        categoriesSelected={props.categories}
+        applyFilters={props.applyFilters}
+      />
+    ),
+  },
+};
 
 export default function useSearch() {
   const { token } = useAuthStore();
@@ -44,15 +63,14 @@ export default function useSearch() {
           // if first load, set recipes state
           // else add new recipes to recipes state
           if (refresh) {
-            flatListRef.current.scrollToOffset({ offset: 0 });
             setRecipes(data.recipes);
           } else {
             setRecipes((prev) => [...prev, ...data.recipes]);
           }
-
-          setHasMore(page < data.totalPages);
+          
+          setHasMore(currentPage < data.totalPages);
           setTotalRecipes(data.totalRecipes);
-          setPage(page + 1);
+          setPage(currentPage + 1);
         }
       } catch (error) {
         console.log(error);
@@ -71,11 +89,24 @@ export default function useSearch() {
   );
 
   const applyFilters = () => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+    setRecipes([]);
     loadRecipes({ refresh: true, resetHasMore: true });
   };
 
   const handleInputOnChange = (key) => (value) => {
     updateFilters({ [key]: value });
+  };
+
+  const handleCategory = (category) => {
+    /* Add category to categories array, if it doesn't exist, otherwise remove it */
+    const { categories } = filtersState;
+    if (categories.includes(category)) {
+      const filtered = categories.filter((c) => c !== category);
+      updateFilters({ categories: filtered });
+    } else {
+      updateFilters({ categories: [...categories, category] });
+    }
   };
 
   return {
@@ -88,10 +119,15 @@ export default function useSearch() {
     // filters state
     filtersState,
     handleInputOnChange,
+    handleCategory,
 
     // functions to load recipes
     loadRecipes,
     applyFilters,
     hasMore,
+
+    // Bottom sheet
+    BottomSheetViews,
+    BottomSheetConfig,
   };
 }

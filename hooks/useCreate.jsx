@@ -2,7 +2,6 @@ import { useReducer, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import * as FileSystem from "expo-file-system";
 import useAuthStore from "../store/authStore";
-import API_URL from "../constants/api";
 import Toast from "react-native-toast-message";
 import StepInput from "../components/StepInput";
 import StepsList from "../components/StepsList";
@@ -106,9 +105,6 @@ export default function useCreate() {
   const { token, user } = useAuthStore();
 
   const { saveLocalRecipe } = useRecipeStore();
-
-  /* Bottom sheet */
-  const bottomSheetRef = useRef(null);
 
   /*  */
   const [status, setStatus] = useState(STATUS_OPTIONS.PRIVATE);
