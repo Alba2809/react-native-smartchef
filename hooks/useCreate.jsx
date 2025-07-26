@@ -167,7 +167,7 @@ export default function useCreate() {
       // save recipe to local storage
       await handleSaveLocal(
         {
-          _id: currentDate.getTime(),
+          _id: currentDate.getTime().toString(),
           ...dataFormatted,
           favoriteCount: 0,
           createdAt: currentDate.toISOString(),

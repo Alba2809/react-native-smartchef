@@ -10,13 +10,29 @@ const useRecipeStore = create((set, get) => ({
   recipesSavedLoaded: false,
   recipesAPILoaded: false,
 
-  getRecipesSaved: async () => {
+  getRecipesSaved: async ({ title = "", categories = [] }) => {
     try {
       // get recipes from local storage
       const recipesJson = await AsyncStorage.getItem("recipes");
       const recipes = recipesJson ? JSON.parse(recipesJson) : [];
 
-      set({ recipesSaved: recipes });
+      // filter recipes by title and categories
+      const filteredRecipes = recipes.filter((recipe) => {
+        const titleMatch = recipe.title
+          .toLowerCase()
+          .includes(title.toLowerCase());
+
+        // if the recipe has at least one category
+        // change some for every to check if all categories match
+        const categoriesMatch =
+          categories.length === 0
+            ? true
+            : recipe.categories.some((cat) => categories.includes(cat));
+
+        return titleMatch && categoriesMatch;
+      });
+
+      set({ recipesSaved: filteredRecipes });
     } catch (error) {
       console.log(error);
     } finally {
@@ -25,9 +41,9 @@ const useRecipeStore = create((set, get) => ({
     }
   },
 
-  getFavorites: async (token) => {
+  getFavorites: async ({ token, title = "", categories = [] }) => {
     try {
-      const res = await getFavoritesRequest(token);
+      const res = await getFavoritesRequest({ token, categories, title });
       const data = await res.json();
 
       if (!res.ok) {

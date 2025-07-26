@@ -17,17 +17,68 @@ import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import useHome from "../../hooks/useHome";
 import RecipeCard from "../../components/RecipeCard";
+import BottomSheetManager from "../../components/BottomSheetManager";
+import useBottomSheet from "../../hooks/useBottomSheet";
 
 export default function index() {
-  const { user, baseFilter, FILTER_OPTIONS, setBaseFilter, allRecipes } =
-    useHome();
-  const flatListRef = useRef(null);
+  const {
+    user,
+    token,
+    flatListRef,
 
-  useEffect(() => {
+    baseFilter,
+    FILTER_OPTIONS,
+    filtersState,
+    setBaseFilter,
+    handleCategory,
+    handleInputOnChange,
+    applyFilters,
+
+    allRecipes,
+    getFavorites,
+    getRecipesSaved,
+
+    BottomSheetViews,
+    BottomSheetConfig,
+  } = useHome();
+
+  const {
+    currentBsConfig,
+    bottomSheetRef,
+    bottomSheetContent,
+    handlePresentModalPress,
+  } = useBottomSheet({
+    BottomSheetViews,
+    BottomSheetConfig,
+    dataProps: {
+      handleCategory,
+      categories: filtersState.categories,
+      applyFilters: () => {
+        bottomSheetRef.current.close();
+        applyFilters();
+      },
+    },
+  });
+
+  /* useEffect(() => {
     if (allRecipes.length > 0 && flatListRef.current) {
       flatListRef.current.scrollToOffset({ offset: 0, animated: true });
     }
-  }, [allRecipes]);
+  }, [allRecipes]); */
+
+  useEffect(() => {
+    Promise.all([
+      getFavorites({
+        token,
+        title: filtersState.title,
+        categories: filtersState.categories,
+      }),
+      getRecipesSaved({
+        title: filtersState.title,
+        categories: filtersState.categories,
+      }),
+    ]);
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -68,13 +119,21 @@ export default function index() {
         <View style={styles.filterContainer}>
           {/* Search bar */}
           <View style={styles.searchContainer}>
-            <Ionicons name="search-outline" size={20} />
+            <Ionicons name="search-outline" size={20} onPress={applyFilters} />
             <TextInput
               style={styles.searchInput}
               placeholder="Buscar receta..."
+              value={filtersState.title}
+              onChangeText={handleInputOnChange("title")}
               placeholderTextColor={COLORS.placeholderText}
+              onEndEditing={applyFilters}
             />
-            <Ionicons name="filter-outline" size={20} />
+            <TouchableOpacity
+              style={{}}
+              onPress={() => handlePresentModalPress(BottomSheetViews.FILTERS)}
+            >
+              <Ionicons name="filter-outline" size={20} />
+            </TouchableOpacity>
           </View>
 
           {/* Tags */}
@@ -125,6 +184,7 @@ export default function index() {
         )}
 
         {/* Recipes list */}
+        {/* TODO: fix the keyExtractor, to use the item._id */}
         <Animated.FlatList
           ref={flatListRef}
           data={allRecipes}
@@ -134,6 +194,17 @@ export default function index() {
           style={{ flex: 1, borderRadius: 14, paddingBottom: 10 }}
           contentContainerStyle={{ gap: 20 }}
         />
+
+        {/* Bottom sheet manager */}
+        {currentBsConfig && (
+          <BottomSheetManager
+            bottomSheetRef={bottomSheetRef}
+            title={currentBsConfig.title}
+            snapPoints={currentBsConfig.snapPoints}
+          >
+            {bottomSheetContent}
+          </BottomSheetManager>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
