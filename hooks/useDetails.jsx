@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { getRecipeRequest } from "../api/recipe";
+import { Animated } from "react-native";
 import useRecipeStore from "../store/recipeStore";
 import Toast from "react-native-toast-message";
-import { Animated } from "react-native";
 import useAuthStore from "../store/authStore";
 
 export default function useDetails({ id }) {

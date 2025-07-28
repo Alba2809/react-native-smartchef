@@ -1,11 +1,11 @@
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 import COLORS from "../constants/colors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,35 +21,60 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
     [router]
   );
 
+  const userText = (recipeUser) =>
+    `por ${recipeUser}${recipeUser === user?.username ? " (tú)" : ""}`;
+
   return (
     <View style={styles.card}>
       {/* Imagen con tiempo */}
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: item.image }} style={styles.image} />
-        <View style={styles.timeBadge}>
-          <Text style={styles.timeText}>{item.totalTime} min</Text>
+      <View
+        style={{
+          width: "100%",
+          paddingVertical: 10,
+          paddingLeft: 8,
+          paddingRight: 58,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <Image
+          source={{ uri: item?.user?.avatar }}
+          style={{
+            width: 40,
+            height: 40,
+            backgroundColor: COLORS.white,
+            borderRadius: 100,
+          }}
+        />
+        <View style={{ flex: 1, flexDirection: "column" }}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text
+            style={{
+              fontSize: 14,
+              color: COLORS.placeholderText,
+              fontWeight: "500",
+            }}
+          >
+            {userText(item.user.username)}
+          </Text>
         </View>
+
         {showHeart && item.isFavorite && (
           <View style={styles.heartButton}>
             <Ionicons name="heart" size={23} color="red" />
           </View>
         )}
-        {/* <View style={{
-          position: "absolute",
-          bottom: 10,
-          left: 10,
-          backgroundColor: "#e9e9e8",
-          borderRadius: 100,
-          paddingHorizontal: 8,
-          paddingVertical: 4,
-        }}>
-          <Text>{item.user.username}</Text>
-        </View> */}
+      </View>
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.timeBadge}>
+          <Text style={styles.timeText}>{item.totalTime} min</Text>
+        </View>
       </View>
 
       {/* Contenido */}
       <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description} numberOfLines={6}>
           {item.description}
         </Text>
@@ -113,7 +138,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: "white",
-    borderRadius: 14,
+    borderRadius: 10,
     overflow: "hidden",
   },
   imageWrapper: {
@@ -133,7 +158,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     position: "absolute",
     left: 8,
-    top: 8,
+    bottom: 8,
   },
   timeText: {
     fontSize: 13,
@@ -145,8 +170,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: "#e9e9e8",
-    borderRadius: 100,
+    backgroundColor: "#eeeeeeff",
+    borderRadius: "100%",
     width: 40,
     height: 40,
     justifyContent: "center",
@@ -159,9 +184,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "500",
-    color: "#2d3748",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1c222cff",
   },
   description: {
     color: "#718096",

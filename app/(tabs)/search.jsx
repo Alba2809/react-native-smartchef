@@ -116,7 +116,10 @@ export default function search() {
             placeholder="Buscar receta..."
             placeholderTextColor="gray"
           />
-          <TouchableOpacity style={{}} onPress={() => handlePresentModalPress(BottomSheetViews.FILTERS)}>
+          <TouchableOpacity
+            style={{}}
+            onPress={() => handlePresentModalPress(BottomSheetViews.FILTERS)}
+          >
             <Ionicons name="filter-outline" size={20} />
           </TouchableOpacity>
         </View>
@@ -162,22 +165,11 @@ export default function search() {
           />
         )}
 
-        {recipes.length === 0 && (
-          <Text
-            style={{
-              fontSize: 15,
-              color: COLORS.textSecondary,
-              paddingHorizontal: 10,
-            }}
-          >
-            No se han encontrado resultados...
-          </Text>
-        )}
-
         {/* List */}
         <FlatList
           ref={flatListRef}
           data={recipes}
+          showsVerticalScrollIndicator={false}
           renderItem={renderRecipeItem}
           keyExtractor={(item) => item._id.toString()}
           initialNumToRender={10}
@@ -192,7 +184,30 @@ export default function search() {
               loadRecipes();
             }
           }}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={
+            hasMore &&
+            recipes.length > 0 && (
+              <ActivityIndicator
+                size="large"
+                color={COLORS.primary}
+                style={{
+                  alignSelf: "center",
+                }}
+              />
+            )
+          }
+          ListEmptyComponent={
+            <Text
+              style={{
+                fontSize: 15,
+                color: COLORS.textSecondary,
+                paddingHorizontal: 10,
+              }}
+            >
+              No se han encontrado resultados...
+            </Text>
+          }
         />
 
         {currentBsConfig && (

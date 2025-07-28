@@ -4,14 +4,13 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  // Image,
   TextInput,
   Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
@@ -170,7 +169,7 @@ export default function index() {
         </View>
 
         {/* Empty list */}
-        {allRecipes.length === 0 && (
+        {/* {allRecipes.length === 0 && (
           <View style={{}}>
             <Text
               style={{
@@ -181,7 +180,7 @@ export default function index() {
               Aún no tienes ninguna receta guardada...
             </Text>
           </View>
-        )}
+        )} */}
 
         {/* Recipes list */}
         {/* TODO: fix the keyExtractor, to use the item._id */}
@@ -190,9 +189,22 @@ export default function index() {
           data={allRecipes}
           renderItem={({ item }) => <RecipeCard item={item} user={user} />}
           keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           style={{ flex: 1, borderRadius: 14, paddingBottom: 10 }}
           contentContainerStyle={{ gap: 20 }}
+          ListEmptyComponent={
+            <View style={{}}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: COLORS.textDark,
+                }}
+              >
+                Aún no tienes ninguna receta guardada...
+              </Text>
+            </View>
+          }
         />
 
         {/* Bottom sheet manager */}

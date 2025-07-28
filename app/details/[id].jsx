@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -89,7 +90,13 @@ const DetailsScreen = () => {
 
       {loading && !recipe ? (
         <>
-          <Text>Cargando...</Text>
+          <ActivityIndicator
+            size="large"
+            color={COLORS.primary}
+            style={{
+              alignSelf: "center",
+            }}
+          />
         </>
       ) : (
         <>
@@ -174,10 +181,8 @@ const DetailsScreen = () => {
             </View>
 
             {/* Ingredients */}
-            <View
-              style={styles.itemsContainer}
-            >
-              <Text style={styles.title}>Ingredientes</Text>
+            <View style={styles.itemsContainer}>
+              <Text style={styles.title}>Ingredientes ({recipe.ingredients.length})</Text>
 
               <View style={styles.itemsList}>
                 {!loading &&
@@ -219,7 +224,7 @@ const DetailsScreen = () => {
             {/* Steps */}
             <View style={styles.itemsContainer}>
               <View style={styles.stepsHeader}>
-                <Text style={styles.title}>Preparación</Text>
+                <Text style={styles.title}>Preparación ({recipe.steps.length})</Text>
                 {/* Read steps */}
                 <TouchableOpacity style={styles.btnReadSteps}>
                   <Ionicons
