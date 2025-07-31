@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import useAuthStore from "../store/authStore";
 import useRecipeStore from "../store/recipeStore";
 import CategoryFilter from "../components/CategoryFilter";
@@ -38,7 +38,7 @@ export default function useHome() {
     }
   );
 
-  const { getFavorites, getRecipesSaved, allRecipes } = useRecipeStore();
+  const { allRecipes, getAllRecipes } = useRecipeStore();
 
   const flatListRef = useRef(null);
 
@@ -59,22 +59,17 @@ export default function useHome() {
 
   const applyFilters = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-    Promise.all([
-      getFavorites({
-        token,
-        title: filtersState.title,
-        categories: filtersState.categories,
-      }),
-      getRecipesSaved({
-        title: filtersState.title,
-        categories: filtersState.categories,
-      }),
-    ]);
+    // if base filter is 'All', load getRecipesSaved and getFavorites
+    // if base filter is 'Saved', load just getRecipesSaved
+    // if base filter is 'My recipes', load just getRecipesSaved created by the user
+    getAllRecipes({
+      token,
+      title: filtersState.title,
+      categories: filtersState.categories,
+      baseFilter,
+      user: user.username,
+    });
   };
-
-  /* useEffect(() => {
-    Promise.all([getFavorites(token), getRecipesSaved()]);
-  }, []); */
 
   return {
     user,
@@ -91,9 +86,8 @@ export default function useHome() {
     applyFilters,
 
     /* Recipes */
-    getFavorites,
-    getRecipesSaved,
     allRecipes,
+    getAllRecipes,
 
     // Bottom sheet
     BottomSheetViews,

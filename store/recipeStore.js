@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { getFavoritesRequest } from "../api/favorite";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const FILTER_OPTIONS = {
+  ALL: "Todas",
+  SAVED: "Guardadas",
+  MY_RECIPES: "Mis recetas",
+};
+
 const useRecipeStore = create((set, get) => ({
   recipesSaved: [],
   recipesAPI: [],
@@ -10,13 +16,18 @@ const useRecipeStore = create((set, get) => ({
   recipesSavedLoaded: false,
   recipesAPILoaded: false,
 
-  getRecipesSaved: async ({ title = "", categories = [] }) => {
+  getRecipesSaved: async ({
+    title = "",
+    categories = [],
+    baseFilter = FILTER_OPTIONS.ALL,
+    user = "",
+  }) => {
     try {
       // get recipes from local storage
       const recipesJson = await AsyncStorage.getItem("recipes");
       const recipes = recipesJson ? JSON.parse(recipesJson) : [];
 
-      // filter recipes by title and categories
+      // filter recipes by title, categories, and (optionally) user
       const filteredRecipes = recipes.filter((recipe) => {
         const titleMatch = recipe.title
           .toLowerCase()
@@ -29,20 +40,37 @@ const useRecipeStore = create((set, get) => ({
             ? true
             : recipe.categories.some((cat) => categories.includes(cat));
 
-        return titleMatch && categoriesMatch;
+        // if base filter is 'My recipes', check if the recipe was created by the user
+        const userMatch =
+          baseFilter === FILTER_OPTIONS.MY_RECIPES
+            ? recipe.user?.username === user
+            : true;
+
+        return titleMatch && categoriesMatch && userMatch;
       });
 
       set({ recipesSaved: filteredRecipes });
     } catch (error) {
       console.log(error);
-    } finally {
-      set({ recipesSavedLoaded: true });
-      if (get().recipesAPILoaded) get().formatRecipes();
     }
   },
 
-  getFavorites: async ({ token, title = "", categories = [] }) => {
+  getFavorites: async ({
+    token,
+    title = "",
+    categories = [],
+    baseFilter = FILTER_OPTIONS.ALL,
+  }) => {
     try {
+      // if base filter is not 'All', then don't make the request
+
+      if (baseFilter !== FILTER_OPTIONS.ALL) {
+        set({ recipesAPI: [] });
+        console.log("baseFilter is not 'All'");
+        return;
+      }
+
+      // else make the request
       const res = await getFavoritesRequest({ token, categories, title });
       const data = await res.json();
 
@@ -55,9 +83,6 @@ const useRecipeStore = create((set, get) => ({
       set({ recipesAPI: data.recipes });
     } catch (error) {
       console.log(error);
-    } finally {
-      set({ recipesAPILoaded: true });
-      if (get().recipesSavedLoaded) get().formatRecipes();
     }
   },
 
@@ -81,6 +106,36 @@ const useRecipeStore = create((set, get) => ({
       await AsyncStorage.removeItem("recipes");
 
       set({ recipesSaved: [] });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getAllRecipes: async ({
+    token,
+    title = "",
+    categories = [],
+    baseFilter = FILTER_OPTIONS.ALL,
+    user = "",
+  }) => {
+    try {
+      console.log("getAllRecipes");
+      await Promise.all([
+        get().getRecipesSaved({
+          title,
+          categories,
+          baseFilter,
+          user,
+        }),
+        get().getFavorites({
+          token,
+          title,
+          categories,
+          baseFilter,
+        }),
+      ]);
+
+      get().formatRecipes();
     } catch (error) {
       console.log(error);
     }

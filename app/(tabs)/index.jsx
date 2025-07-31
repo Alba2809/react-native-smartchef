@@ -34,8 +34,7 @@ export default function index() {
     applyFilters,
 
     allRecipes,
-    getFavorites,
-    getRecipesSaved,
+    getAllRecipes,
 
     BottomSheetViews,
     BottomSheetConfig,
@@ -59,25 +58,15 @@ export default function index() {
     },
   });
 
-  /* useEffect(() => {
-    if (allRecipes.length > 0 && flatListRef.current) {
-      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
-    }
-  }, [allRecipes]); */
-
   useEffect(() => {
-    Promise.all([
-      getFavorites({
-        token,
-        title: filtersState.title,
-        categories: filtersState.categories,
-      }),
-      getRecipesSaved({
-        title: filtersState.title,
-        categories: filtersState.categories,
-      }),
-    ]);
-  }, []);
+    getAllRecipes({
+      token,
+      title: filtersState.title,
+      categories: filtersState.categories,
+      baseFilter,
+      user: user.username,
+    })
+  }, [baseFilter]);
 
   return (
     <KeyboardAvoidingView
