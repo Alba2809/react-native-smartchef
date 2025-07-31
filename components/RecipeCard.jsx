@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Image } from "expo-image";
+import { Image, ImageBackground } from "expo-image";
 import COLORS from "../constants/colors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -66,12 +66,11 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
           </View>
         )}
       </View>
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: item.image }} style={styles.image} />
+      <ImageBackground source={{ uri: item.image }} style={styles.imageWrapper}>
         <View style={styles.timeBadge}>
           <Text style={styles.timeText}>{item.totalTime} min</Text>
         </View>
-      </View>
+      </ImageBackground>
 
       {/* Contenido */}
       <View style={styles.content}>
