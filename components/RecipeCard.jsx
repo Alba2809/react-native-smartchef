@@ -60,7 +60,7 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
           </Text>
         </View>
 
-        {showHeart && item.isFavorite && (
+        {showHeart && (
           <View style={styles.heartButton}>
             <Ionicons name="heart" size={23} color="red" />
           </View>

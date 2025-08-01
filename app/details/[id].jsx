@@ -9,6 +9,7 @@ import {
   ScrollView,
   Animated,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,6 +22,8 @@ import StepsList from "../../components/StepsList";
 import useBottomSheet from "../../hooks/useBottomSheet";
 import useDetails from "../../hooks/useDetails";
 import LoadingPage from "@/components/LoadingPage";
+import { useEffect } from "react";
+import useFavoriteStore from "../../store/favoriteStore";
 
 const BottomSheetViews = {
   INGREDIENTS: "INGREDIENTS",
@@ -44,7 +47,21 @@ const DetailsScreen = () => {
   const { id } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
 
-  const { scrollY, backgroundColor, limitSteps, recipe, loading } = useDetails({
+  const {
+    scrollY,
+    backgroundColor,
+    limitSteps,
+    isTheOwner,
+
+    recipe,
+    getRecipe,
+    loading,
+    refreshRecipe,
+    refreshing,
+
+    handleFavorite,
+    loadingFavorite,
+  } = useDetails({
     id,
   });
 
@@ -61,6 +78,10 @@ const DetailsScreen = () => {
       steps: recipe?.steps,
     },
   });
+
+  useEffect(() => {
+    getRecipe();
+  }, []);
 
   const goBack = () => {
     router.back();
@@ -127,6 +148,15 @@ const DetailsScreen = () => {
             )}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
+            /* TODO: fix the refresh control */
+            /* refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={refreshRecipe}
+                tintColor={COLORS.primary}
+                colors={[COLORS.primary]}
+              />
+            } */
           >
             {/* Basic info Card */}
             <View style={styles.basicInfoContainer}>
@@ -143,7 +173,9 @@ const DetailsScreen = () => {
                   />
                   <View>
                     <Text style={styles.userNameFor}>por</Text>
-                    <Text style={styles.userName}>{recipe.user.username}</Text>
+                    <Text style={styles.userName}>
+                      {recipe.user.username} {isTheOwner && "(tú)"}
+                    </Text>
                   </View>
                 </View>
                 {/* Read the text */}
@@ -159,9 +191,26 @@ const DetailsScreen = () => {
 
               {/* Likes, time, download */}
               <View style={styles.interactionsContainer}>
-                <TouchableOpacity style={styles.btnLikes}>
-                  <Ionicons name="heart" size={20} color="#ef4444" />
-                  <Text style={styles.btnLikesText}>{recipe.likes || 0}</Text>
+                <TouchableOpacity
+                  style={styles.btnLikes}
+                  onPress={handleFavorite}
+                  disabled={loadingFavorite}
+                >
+                  <Ionicons
+                    name={recipe.isFavorite ? "heart" : "heart-outline"}
+                    size={20}
+                    color={recipe.isFavorite ? "#ef4444" : "gray"}
+                  />
+                  <Text
+                    style={[
+                      styles.btnLikesText,
+                      {
+                        color: recipe.isFavorite ? COLORS.primary : "gray",
+                      },
+                    ]}
+                  >
+                    {recipe.favoriteCount || 0}
+                  </Text>
                 </TouchableOpacity>
 
                 <View style={styles.timeContainer}>
@@ -178,11 +227,51 @@ const DetailsScreen = () => {
 
               {/* Description */}
               <Text style={styles.description}>{recipe.description}</Text>
+
+              {/* Recipe manager (Delete, sahre) when the user is the owner */}
+              {isTheOwner && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      paddingVertical: 6,
+                      paddingHorizontal: 16,
+                      borderRadius: 10,
+                      backgroundColor: COLORS.primary,
+                    }}
+                  >
+                    <Ionicons name="trash-bin" size={20} color="white" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{
+                      paddingVertical: 6,
+                      paddingHorizontal: 16,
+                      borderRadius: 10,
+                      backgroundColor: COLORS.secondary,
+                    }}
+                  >
+                    <Ionicons
+                      name="share-social-outline"
+                      size={20}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
             {/* Ingredients */}
             <View style={styles.itemsContainer}>
-              <Text style={styles.title}>Ingredientes ({recipe.ingredients.length})</Text>
+              <Text style={styles.title}>
+                Ingredientes ({recipe.ingredients.length})
+              </Text>
 
               <View style={styles.itemsList}>
                 {!loading &&
@@ -224,7 +313,9 @@ const DetailsScreen = () => {
             {/* Steps */}
             <View style={styles.itemsContainer}>
               <View style={styles.stepsHeader}>
-                <Text style={styles.title}>Preparación ({recipe.steps.length})</Text>
+                <Text style={styles.title}>
+                  Preparación ({recipe.steps.length})
+                </Text>
                 {/* Read steps */}
                 <TouchableOpacity style={styles.btnReadSteps}>
                   <Ionicons

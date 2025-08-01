@@ -15,6 +15,7 @@ import RecipeCard from "../../components/RecipeCard";
 import useSearch from "../../hooks/useSearch";
 import BottomSheetManager from "../../components/BottomSheetManager";
 import useBottomSheet from "../../hooks/useBottomSheet";
+import useFavoriteStore from "../../store/favoriteStore";
 
 export default function search() {
   const {
@@ -34,6 +35,7 @@ export default function search() {
     BottomSheetConfig,
     BottomSheetViews,
   } = useSearch();
+  const { recipesFavorited } = useFavoriteStore();
 
   const {
     currentBsConfig,
@@ -58,8 +60,13 @@ export default function search() {
   }, []);
 
   const renderRecipeItem = useCallback(
-    ({ item }) => <RecipeCard item={item} showHeart={true} />,
-    []
+    ({ item }) => (
+      <RecipeCard
+        item={item}
+        showHeart={recipesFavorited.includes(item._id) || item.isFavorite}
+      />
+    ),
+    [recipesFavorited]
   );
 
   return (

@@ -23,6 +23,13 @@ const useRecipeStore = create((set, get) => ({
     user = "",
   }) => {
     try {
+      // if base filter is not 'All' or 'My recipes', then don't make the request
+
+      if (baseFilter === FILTER_OPTIONS.SAVED) {
+        set({ recipesSaved: [] });
+        return;
+      }
+
       // get recipes from local storage
       const recipesJson = await AsyncStorage.getItem("recipes");
       const recipes = recipesJson ? JSON.parse(recipesJson) : [];
@@ -62,11 +69,10 @@ const useRecipeStore = create((set, get) => ({
     baseFilter = FILTER_OPTIONS.ALL,
   }) => {
     try {
-      // if base filter is not 'All', then don't make the request
+      // if base filter is not 'All' or 'Saved', then don't make the request
 
-      if (baseFilter !== FILTER_OPTIONS.ALL) {
+      if (baseFilter === FILTER_OPTIONS.MY_RECIPES) {
         set({ recipesAPI: [] });
-        console.log("baseFilter is not 'All'");
         return;
       }
 
@@ -119,7 +125,6 @@ const useRecipeStore = create((set, get) => ({
     user = "",
   }) => {
     try {
-      console.log("getAllRecipes");
       await Promise.all([
         get().getRecipesSaved({
           title,
