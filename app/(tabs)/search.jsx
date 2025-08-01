@@ -8,6 +8,7 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useCallback, useEffect } from "react";
 import COLORS from "../../constants/colors";
@@ -20,16 +21,18 @@ import useFavoriteStore from "../../store/favoriteStore";
 export default function search() {
   const {
     recipes,
-    loading,
     totalRecipes,
     flatListRef,
-
+    
     filtersState,
     handleInputOnChange,
     handleCategory,
-
-    loadRecipes,
+    
     applyFilters,
+    fetchRecipes,
+    handleLoadMore,
+    loading,
+    refreshing,
     hasMore,
 
     BottomSheetConfig,
@@ -56,7 +59,7 @@ export default function search() {
   });
 
   useEffect(() => {
-    loadRecipes({ refresh: true });
+    fetchRecipes();
   }, []);
 
   const renderRecipeItem = useCallback(
@@ -176,21 +179,29 @@ export default function search() {
         <FlatList
           ref={flatListRef}
           data={recipes}
-          showsVerticalScrollIndicator={false}
           renderItem={renderRecipeItem}
-          keyExtractor={(item) => item._id.toString()}
-          initialNumToRender={10}
           style={{
             flex: 1,
             borderRadius: 14,
             paddingHorizontal: 10,
           }}
+          keyExtractor={(item) => item._id.toString()}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => fetchRecipes(1, true)}
+              tintColor={COLORS.primary}
+              colors={[COLORS.primary]}
+            />
+          }
+          initialNumToRender={10}
           contentContainerStyle={{ gap: 20 }}
-          onEndReached={() => {
+          onEndReached={/* () => {
             if (!loading && hasMore) {
               loadRecipes();
             }
-          }}
+          } */handleLoadMore}
           onEndReachedThreshold={0.1}
           ListFooterComponent={
             hasMore &&

@@ -22,13 +22,20 @@ const BottomSheetConfig = {
   },
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default function useSearch() {
   const { token } = useAuthStore();
+
   const [recipes, setRecipes] = useState([]);
   const [totalRecipes, setTotalRecipes] = useState(0);
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
   const [filtersState, updateFilters] = useReducer(
     (prev, next) => ({ ...prev, ...next }),
     {
@@ -38,60 +45,65 @@ export default function useSearch() {
   );
   const flatListRef = useRef(null);
 
-  const loadRecipes = useCallback(
-    async ({ refresh = false, resetHasMore = false } = {}) => {
-      try {
-        const currentHasMore = resetHasMore ? true : hasMore;
-        // if no more recipes or loading or is not the first load, return
-        if (!currentHasMore || loading) return;
+  const fetchRecipes = async (pageNum = 1, refresh = false) => {
+    try {
+      if (refresh) setRefreshing(true);
+      else if (pageNum === 1) setLoading(true);
 
-        setLoading(true);
+      const response = await getRecipesRequest({
+        token,
+        page: pageNum,
+        limit: 10,
+        title: filtersState.title || "",
+        categories: filtersState.categories,
+      });
+      const data = await response.json();
 
-        const currentPage = refresh ? 1 : page;
+      if (!response.ok || data.error)
+        throw new Error(data.error || "No se pudieron obtener las recetas.");
 
-        const res = await getRecipesRequest({
-          token,
-          page: currentPage,
-          limit: 10,
-          title: filtersState.title || "",
-          categories: filtersState.categories,
-        });
+      if (refresh || pageNum === 1) {
+        setRecipes(data.recipes);
+      } else {
+        const uniqueRecipes = Array.from(
+          new Set([...recipes, ...data.recipes].map((recipe) => recipe._id))
+        ).map((id) =>
+          [...recipes, ...data.recipes].find((recipe) => recipe._id === id)
+        );
 
-        const data = await res.json();
-
-        if (res.ok) {
-          // if first load, set recipes state
-          // else add new recipes to recipes state
-          if (refresh) {
-            setRecipes(data.recipes);
-          } else {
-            setRecipes((prev) => [...prev, ...data.recipes]);
-          }
-          
-          setHasMore(currentPage < data.totalPages);
-          setTotalRecipes(data.totalRecipes);
-          setPage(currentPage + 1);
-        }
-      } catch (error) {
-        console.log(error);
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "No se pudo obtener las recetas",
-          position: "top",
-          text1Style: { fontSize: 14 },
-        });
-      } finally {
-        setLoading(false);
+        setRecipes(uniqueRecipes);
       }
-    },
-    [token, page, loading, hasMore, filtersState]
-  );
+
+      setHasMore(pageNum < data.totalPages);
+      setTotalRecipes(data.totalRecipes);
+      setPage(pageNum);
+    } catch (error) {
+      console.log("Error fetching books", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudieron obtener las recetas",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      if (refresh) {
+        // added a delay to give the feeling of a refresh
+        await sleep(800);
+        setRefreshing(false);
+      } else setLoading(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (hasMore && !loading && !refreshing) {
+      await fetchRecipes(page + 1);
+    }
+  };
 
   const applyFilters = () => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-    setRecipes([]);
-    loadRecipes({ refresh: true, resetHasMore: true });
+    fetchRecipes(1);
   };
 
   const handleInputOnChange = (key) => (value) => {
@@ -112,18 +124,20 @@ export default function useSearch() {
   return {
     // recipes state
     recipes,
-    loading,
     totalRecipes,
     flatListRef,
-
+    
     // filters state
     filtersState,
     handleInputOnChange,
     handleCategory,
-
+    
     // functions to load recipes
-    loadRecipes,
     applyFilters,
+    fetchRecipes,
+    handleLoadMore,
+    loading,
+    refreshing,
     hasMore,
 
     // Bottom sheet
