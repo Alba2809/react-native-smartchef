@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 5,
   },
-  stepDivider: {
+  divider: {
     height: 1,
     backgroundColor: "lightgray",
   },

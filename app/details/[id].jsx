@@ -231,6 +231,9 @@ const DetailsScreen = () => {
               {/* Description */}
               <Text style={styles.description}>{recipe.description}</Text>
 
+              {/* Divider */}
+              <View style={styles.divider} />
+
               {/* Recipe manager (Delete, sahre) when the user is the owner */}
               {isTheOwner && (
                 <View
@@ -366,7 +369,7 @@ const DetailsScreen = () => {
                       {/* Divider */}
                       {index < limitSteps - 1 &&
                         index !== recipe.steps.length - 1 && (
-                          <View style={styles.stepDivider} />
+                          <View style={styles.divider} />
                         )}
                     </View>
                   ))}
