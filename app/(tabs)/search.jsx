@@ -20,6 +20,8 @@ import useFavoriteStore from "../../store/favoriteStore";
 
 export default function search() {
   const {
+    user,
+    
     recipes,
     totalRecipes,
     flatListRef,
@@ -66,6 +68,7 @@ export default function search() {
     ({ item }) => (
       <RecipeCard
         item={item}
+        localusername={user?.username}
         showHeart={recipesFavorited.includes(item._id) || item.isFavorite}
       />
     ),

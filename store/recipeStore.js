@@ -117,6 +117,30 @@ const useRecipeStore = create((set, get) => ({
     }
   },
 
+  updateLocalRecipe: async (id, newData) => {
+    try {
+      const recipesSaved = get().recipesSaved;
+
+      const index = recipesSaved.findIndex((r) => r._id === id);
+
+      if (index === -1) {
+        return;
+      }
+
+      recipesSaved[index] = data;
+
+      await AsyncStorage.setItem(
+        "recipes",
+        JSON.stringify(recipesSaved)
+      );
+
+      set({ recipesSaved });
+      get().formatRecipes();
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   getAllRecipes: async ({
     token,
     title = "",

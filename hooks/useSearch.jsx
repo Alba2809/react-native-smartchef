@@ -25,7 +25,7 @@ const BottomSheetConfig = {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function useSearch() {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
 
   const [recipes, setRecipes] = useState([]);
   const [totalRecipes, setTotalRecipes] = useState(0);
@@ -122,6 +122,8 @@ export default function useSearch() {
   };
 
   return {
+    user,
+
     // recipes state
     recipes,
     totalRecipes,

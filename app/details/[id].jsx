@@ -61,6 +61,9 @@ const DetailsScreen = () => {
 
     handleFavorite,
     loadingFavorite,
+
+    uploadRecipe,
+    sending,
   } = useDetails({
     id,
   });
@@ -256,12 +259,20 @@ const DetailsScreen = () => {
                       borderRadius: 10,
                       backgroundColor: COLORS.secondary,
                     }}
+                    onPress={uploadRecipe}
                   >
-                    <Ionicons
-                      name="share-social-outline"
-                      size={20}
-                      color="white"
-                    />
+                    {sending ? (
+                      <ActivityIndicator
+                        size="small"
+                        color="white"
+                      />
+                    ) : (
+                      <Ionicons
+                        name="share-social-outline"
+                        size={20}
+                        color="white"
+                      />
+                    )}
                   </TouchableOpacity>
                 </View>
               )}

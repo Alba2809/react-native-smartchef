@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import useCategoryStore from "../store/categoryStore";
 import { useCallback, useMemo, memo } from "react";
 
-const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
+const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
   const { categories } = useCategoryStore();
   const router = useRouter();
 
@@ -22,7 +22,7 @@ const RecipeCard = memo(({ item, user = null, showHeart = false }) => {
   );
 
   const userText = (recipeUser) =>
-    `por ${recipeUser}${recipeUser === user?.username ? " (tú)" : ""}`;
+    `por ${recipeUser}${recipeUser === localusername ? " (tú)" : ""}`;
 
   return (
     <View style={styles.card}>

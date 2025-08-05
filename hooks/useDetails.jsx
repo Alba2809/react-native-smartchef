@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { getRecipeRequest } from "../api/recipe";
+import { createRecipe, getRecipeRequest } from "../api/recipe";
 import { Animated } from "react-native";
+import { createDeleteFavorite } from "../api/favorite";
+import * as FileSystem from "expo-file-system";
 import useRecipeStore from "../store/recipeStore";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../store/authStore";
-import { createDeleteFavorite } from "../api/favorite";
 import useFavoriteStore from "../store/favoriteStore";
 
 export default function useDetails({ id }) {
@@ -17,7 +18,7 @@ export default function useDetails({ id }) {
 
   const limitSteps = 3;
 
-  const { allRecipes } = useRecipeStore();
+  const { allRecipes, updateLocalRecipe } = useRecipeStore();
   const { handleFavorite: handleFavoriteStore, recipesFavorited } =
     useFavoriteStore();
   const { token, user } = useAuthStore();
@@ -26,6 +27,7 @@ export default function useDetails({ id }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const [sending, setSending] = useState(false);
   const isTheOwner = user.username === recipe?.user?.username;
 
   const getRecipe = async () => {
@@ -165,6 +167,86 @@ export default function useDetails({ id }) {
     }
   };
 
+  const uploadRecipe = async () => {
+    try {
+      if (sending) return;
+
+      setSending(true);
+
+      const image = await imageData(recipe.image);
+
+      const dataFormatted = {
+        clientId: recipe._id,
+        title: recipe.title,
+        description: recipe.description,
+        totalTime: recipe.totalTime,
+        ingredients: recipe.ingredients,
+        steps: recipe.steps,
+        categories: recipe.categories,
+        image,
+      };
+
+      const res = await createRecipe(dataFormatted, token);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Error al publicar la receta");
+      }
+
+      const newRecipe = data.recipe;
+
+      // update recipe _id in the store
+      if (newRecipe) {
+        const newId = newRecipe._id.toString();
+        await updateLocalRecipe(recipe._id, {
+          ...recipe,
+          _id: newId,
+        });
+        
+        recipe._id = newId;
+        id = newId;
+      }
+
+      Toast.show({
+        type: "success",
+        text1: "Publicación exitosa",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } catch (error) {
+      const message = error?.message || "No se pudo publicar la receta";
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: message,
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const imageData = async (uri) => {
+    const base64 = await getBase64(uri);
+    const type = imageType(uri);
+    return `data:${type};base64,${base64}`;
+  };
+
+  const getBase64 = async (uri) => {
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    return base64;
+  };
+
+  const imageType = (uri) => {
+    const uriParts = uri.split(".");
+    const fileType = uriParts[uriParts.length - 1];
+    return fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
+  };
+
   return {
     scrollY,
     backgroundColor,
@@ -179,5 +261,8 @@ export default function useDetails({ id }) {
 
     handleFavorite,
     loadingFavorite,
+
+    uploadRecipe,
+    sending,
   };
 }
