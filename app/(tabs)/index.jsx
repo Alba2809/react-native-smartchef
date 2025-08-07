@@ -176,7 +176,7 @@ export default function index() {
         <Animated.FlatList
           ref={flatListRef}
           data={allRecipes}
-          renderItem={({ item }) => <RecipeCard item={item} user={user} />}
+          renderItem={({ item }) => <RecipeCard item={item} localusername={user.username} />}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}

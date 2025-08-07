@@ -44,3 +44,12 @@ export const getRecipesRequest = async ({
     },
   });
 };
+
+export const deleteRecipeRequest = async (token, recipeId) =>
+  fetch(`${API_URL}/recipe/${recipeId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });

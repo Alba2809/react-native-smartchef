@@ -22,44 +22,40 @@ const useRecipeStore = create((set, get) => ({
     baseFilter = FILTER_OPTIONS.ALL,
     user = "",
   }) => {
-    try {
-      // if base filter is not 'All' or 'My recipes', then don't make the request
+    // if base filter is not 'All' or 'My recipes', then don't make the request
 
-      if (baseFilter === FILTER_OPTIONS.SAVED) {
-        set({ recipesSaved: [] });
-        return;
-      }
-
-      // get recipes from local storage
-      const recipesJson = await AsyncStorage.getItem("recipes");
-      const recipes = recipesJson ? JSON.parse(recipesJson) : [];
-
-      // filter recipes by title, categories, and (optionally) user
-      const filteredRecipes = recipes.filter((recipe) => {
-        const titleMatch = recipe.title
-          .toLowerCase()
-          .includes(title.toLowerCase());
-
-        // if the recipe has at least one category
-        // change some for every to check if all categories match
-        const categoriesMatch =
-          categories.length === 0
-            ? true
-            : recipe.categories.some((cat) => categories.includes(cat));
-
-        // if base filter is 'My recipes', check if the recipe was created by the user
-        const userMatch =
-          baseFilter === FILTER_OPTIONS.MY_RECIPES
-            ? recipe.user?.username === user
-            : true;
-
-        return titleMatch && categoriesMatch && userMatch;
-      });
-
-      set({ recipesSaved: filteredRecipes });
-    } catch (error) {
-      console.log(error);
+    if (baseFilter === FILTER_OPTIONS.SAVED) {
+      set({ recipesSaved: [] });
+      return;
     }
+
+    // get recipes from local storage
+    const recipesJson = await AsyncStorage.getItem("recipes");
+    const recipes = recipesJson ? JSON.parse(recipesJson) : [];
+
+    // filter recipes by title, categories, and (optionally) user
+    const filteredRecipes = recipes.filter((recipe) => {
+      const titleMatch = recipe.title
+        .toLowerCase()
+        .includes(title.toLowerCase());
+
+      // if the recipe has at least one category
+      // change some for every to check if all categories match
+      const categoriesMatch =
+        categories.length === 0
+          ? true
+          : recipe.categories.some((cat) => categories.includes(cat));
+
+      // if base filter is 'My recipes', check if the recipe was created by the user
+      const userMatch =
+        baseFilter === FILTER_OPTIONS.MY_RECIPES
+          ? recipe.user?.username === user
+          : true;
+
+      return titleMatch && categoriesMatch && userMatch;
+    });
+
+    set({ recipesSaved: filteredRecipes });
   },
 
   getFavorites: async ({
@@ -68,77 +64,67 @@ const useRecipeStore = create((set, get) => ({
     categories = [],
     baseFilter = FILTER_OPTIONS.ALL,
   }) => {
-    try {
-      // if base filter is not 'All' or 'Saved', then don't make the request
+    // if base filter is not 'All' or 'Saved', then don't make the request
 
-      if (baseFilter === FILTER_OPTIONS.MY_RECIPES) {
-        set({ recipesAPI: [] });
-        return;
-      }
-
-      // else make the request
-      const res = await getFavoritesRequest({ token, categories, title });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.error || "Error al obtener las recetas en la nube"
-        );
-      }
-
-      set({ recipesAPI: data.recipes });
-    } catch (error) {
-      console.log(error);
+    if (baseFilter === FILTER_OPTIONS.MY_RECIPES) {
+      set({ recipesAPI: [] });
+      return;
     }
+
+    // else make the request
+    const res = await getFavoritesRequest({ token, categories, title });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Error al obtener las recetas en la nube");
+    }
+
+    set({ recipesAPI: data.recipes });
   },
 
   saveLocalRecipe: async (data) => {
-    try {
-      const recipesSaved = get().recipesSaved;
-      await AsyncStorage.setItem(
-        "recipes",
-        JSON.stringify([data, ...recipesSaved])
-      );
+    const recipesSaved = get().recipesSaved;
+    await AsyncStorage.setItem(
+      "recipes",
+      JSON.stringify([data, ...recipesSaved])
+    );
 
-      set({ recipesSaved: [data, ...recipesSaved] });
-      get().formatRecipes();
-    } catch (error) {
-      console.log(error);
-    }
+    set({ recipesSaved: [data, ...recipesSaved] });
+    get().formatRecipes();
   },
 
-  deleteRecipes: async () => {
-    try {
-      await AsyncStorage.removeItem("recipes");
+  deleteRecipe: async (id) => {
+    const recipesSaved = get().recipesSaved;
 
-      set({ recipesSaved: [] });
-    } catch (error) {
-      console.log(error);
+    const index = recipesSaved.findIndex((r) => r._id === id);
+
+    if (index === -1) {
+      throw new Error("No se encontró la receta");
     }
+
+    recipesSaved.splice(index, 1);
+
+    await AsyncStorage.setItem("recipes", JSON.stringify(recipesSaved));
+
+    set({ recipesSaved });
   },
 
   updateLocalRecipe: async (id, newData) => {
-    try {
-      const recipesSaved = get().recipesSaved;
+    const recipesSaved = get().recipesSaved;
 
-      const index = recipesSaved.findIndex((r) => r._id === id);
+    const index = recipesSaved.findIndex((r) => r._id === id);
 
-      if (index === -1) {
-        return;
-      }
-
-      recipesSaved[index] = data;
-
-      await AsyncStorage.setItem(
-        "recipes",
-        JSON.stringify(recipesSaved)
-      );
-
-      set({ recipesSaved });
-      get().formatRecipes();
-    } catch (error) {
-      console.log(error);
+    if (index === -1) {
+      throw new Error("No se encontró la receta");
     }
+
+    const newRecipes = [...recipesSaved];
+    newRecipes[index] = newData;
+
+    await AsyncStorage.setItem("recipes", JSON.stringify(newRecipes));
+
+    set({ recipesSaved: newRecipes });
+    get().formatRecipes();
   },
 
   getAllRecipes: async ({
@@ -148,26 +134,22 @@ const useRecipeStore = create((set, get) => ({
     baseFilter = FILTER_OPTIONS.ALL,
     user = "",
   }) => {
-    try {
-      await Promise.all([
-        get().getRecipesSaved({
-          title,
-          categories,
-          baseFilter,
-          user,
-        }),
-        get().getFavorites({
-          token,
-          title,
-          categories,
-          baseFilter,
-        }),
-      ]);
+    await Promise.all([
+      get().getRecipesSaved({
+        title,
+        categories,
+        baseFilter,
+        user,
+      }),
+      get().getFavorites({
+        token,
+        title,
+        categories,
+        baseFilter,
+      }),
+    ]);
 
-      get().formatRecipes();
-    } catch (error) {
-      console.log(error);
-    }
+    get().formatRecipes();
   },
 
   formatRecipes: () => {

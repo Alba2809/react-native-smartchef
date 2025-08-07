@@ -64,6 +64,9 @@ const DetailsScreen = () => {
 
     uploadRecipe,
     sending,
+
+    confirmDelete,
+    deleting,
   } = useDetails({
     id,
   });
@@ -89,6 +92,12 @@ const DetailsScreen = () => {
   const goBack = () => {
     router.back();
   };
+
+  useEffect(() => {
+    if (recipe) {
+      console.log(recipe)
+    }
+  }, [recipe?._id, recipe?.uploaded]);
 
   return (
     <View
@@ -251,8 +260,14 @@ const DetailsScreen = () => {
                       borderRadius: 10,
                       backgroundColor: COLORS.primary,
                     }}
+                    onPress={confirmDelete}
+                    disabled={deleting}
                   >
-                    <Ionicons name="trash-bin" size={20} color="white" />
+                    {deleting ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Ionicons name="trash-bin" size={20} color="white" />
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -263,12 +278,10 @@ const DetailsScreen = () => {
                       backgroundColor: COLORS.secondary,
                     }}
                     onPress={uploadRecipe}
+                    disabled={sending}
                   >
                     {sending ? (
-                      <ActivityIndicator
-                        size="small"
-                        color="white"
-                      />
+                      <ActivityIndicator size="small" color="white" />
                     ) : (
                       <Ionicons
                         name="share-social-outline"

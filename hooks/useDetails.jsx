@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { createRecipe, getRecipeRequest } from "../api/recipe";
-import { Animated } from "react-native";
+import {
+  createRecipe,
+  deleteRecipeRequest,
+  getRecipeRequest,
+} from "../api/recipe";
+import { Alert, Animated } from "react-native";
 import { createDeleteFavorite } from "../api/favorite";
-import * as FileSystem from "expo-file-system";
+import { deleteImage, imageData } from "../utils/image";
+import { useRouter, useNavigation } from "expo-router";
 import useRecipeStore from "../store/recipeStore";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../store/authStore";
@@ -18,7 +23,7 @@ export default function useDetails({ id }) {
 
   const limitSteps = 3;
 
-  const { allRecipes, updateLocalRecipe } = useRecipeStore();
+  const { allRecipes, updateLocalRecipe, deleteRecipe } = useRecipeStore();
   const { handleFavorite: handleFavoriteStore, recipesFavorited } =
     useFavoriteStore();
   const { token, user } = useAuthStore();
@@ -28,7 +33,11 @@ export default function useDetails({ id }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
   const [sending, setSending] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const isTheOwner = user.username === recipe?.user?.username;
+
+  const router = useRouter();
+  const navigation = useNavigation();
 
   const getRecipe = async () => {
     try {
@@ -169,7 +178,7 @@ export default function useDetails({ id }) {
 
   const uploadRecipe = async () => {
     try {
-      if (sending) return;
+      if (sending || deleting) return;
 
       setSending(true);
 
@@ -201,10 +210,12 @@ export default function useDetails({ id }) {
         await updateLocalRecipe(recipe._id, {
           ...recipe,
           _id: newId,
+          uploaded: true,
         });
-        
+
         recipe._id = newId;
-        id = newId;
+        recipe.uploaded = true;
+        navigation.setParams({ id: newId });
       }
 
       Toast.show({
@@ -214,6 +225,7 @@ export default function useDetails({ id }) {
         text1Style: { fontSize: 14 },
       });
     } catch (error) {
+      console.log(error)
       const message = error?.message || "No se pudo publicar la receta";
       Toast.show({
         type: "error",
@@ -227,24 +239,81 @@ export default function useDetails({ id }) {
     }
   };
 
-  const imageData = async (uri) => {
-    const base64 = await getBase64(uri);
-    const type = imageType(uri);
-    return `data:${type};base64,${base64}`;
+  const handleDelete = async () => {
+    try {
+      if (deleting || sending) return;
+
+      setDeleting(true);
+
+      // delete recipe data from the api if the user uploaded the recipe
+      if (recipe.uploaded) {
+        const res = await deleteRecipeRequest(token, recipe._id);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Error al eliminar la receta");
+        } else {
+          Toast.show({
+            type: "success",
+            text1: "Se ha eliminado la publicación de la receta...",
+            position: "top",
+            text1Style: { fontSize: 14 },
+          });
+
+          recipe.uploaded = false;
+          await updateLocalRecipe(recipe._id, recipe);
+        }
+      }
+
+      // delete image locally
+      const uri = recipe.image;
+      const imageDeleted = await deleteImage(uri);
+
+      if (!imageDeleted) {
+        throw new Error("Error al eliminar la imagen");
+      }
+
+      // delete recipe data from the store
+      await deleteRecipe(recipe._id);
+
+      Toast.show({
+        type: "success",
+        text1: "Eliminación exitosa",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      router.replace("/");
+    } catch (error) {
+      const message = error?.message || "No se pudo eliminar la receta";
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: message,
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
-  const getBase64 = async (uri) => {
-    const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    return base64;
-  };
-
-  const imageType = (uri) => {
-    const uriParts = uri.split(".");
-    const fileType = uriParts[uriParts.length - 1];
-    return fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
+  const confirmDelete = () => {
+    Alert.alert(
+      "¿Estás seguro de que quieres eliminar esta receta?",
+      null,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: handleDelete,
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   return {
@@ -264,5 +333,9 @@ export default function useDetails({ id }) {
 
     uploadRecipe,
     sending,
+
+    confirmDelete,
+    handleDelete,
+    deleting,
   };
 }

@@ -1,5 +1,6 @@
-import { useReducer, useRef, useState } from "react";
+import { useReducer, useState } from "react";
 import { useRouter } from "expo-router";
+import { createRecipe } from "../api/recipe";
 import * as FileSystem from "expo-file-system";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
@@ -8,8 +9,8 @@ import StepsList from "../components/StepsList";
 import IngredientInput from "../components/IngredientInput";
 import IngredientsList from "../components/IngredientsList";
 import CategoryPicker from "../components/CategoryPicker";
-import { createRecipe } from "../api/recipe";
 import useRecipeStore from "../store/recipeStore";
+import { imageData, imageType } from "../utils/image";
 
 const BottomSheetViews = {
   CATEGORIES: "CATEGORIES",
@@ -146,13 +147,8 @@ export default function useCreate() {
       setIsLoading(true);
 
       // get file extension form URI or default to jpeg
-      const uriParts = image.split(".");
-      const fileType = uriParts[uriParts.length - 1];
-      const imageType = fileType
-        ? `image/${fileType.toLowerCase()}`
-        : "image/jpeg";
-
-      const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
+      const fileType = imageType(image);
+      const imageDataUrl = imageData(image, imageBase64);
 
       const dataFormatted = {
         title: title.trim(),
