@@ -1,6 +1,7 @@
 import { useReducer, useState } from "react";
 import { useRouter } from "expo-router";
 import { createRecipe } from "../api/recipe";
+import { imageData, imageType } from "../utils/image";
 import * as FileSystem from "expo-file-system";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
@@ -10,7 +11,7 @@ import IngredientInput from "../components/IngredientInput";
 import IngredientsList from "../components/IngredientsList";
 import CategoryPicker from "../components/CategoryPicker";
 import useRecipeStore from "../store/recipeStore";
-import { imageData, imageType } from "../utils/image";
+import AITabs from "../components/AITabs";
 
 const BottomSheetViews = {
   CATEGORIES: "CATEGORIES",
@@ -18,6 +19,7 @@ const BottomSheetViews = {
   NEW_INGREDIENT: "NEW_INGREDIENT",
   STEPS: "STEPS",
   NEW_STEP: "NEW_STEP",
+  AI_OPTIONS: "AI_OPTIONS",
 };
 
 const BottomSheetConfig = {
@@ -67,6 +69,11 @@ const BottomSheetConfig = {
         totalSteps={props.totalSteps}
       />
     ),
+  },
+  [BottomSheetViews.AI_OPTIONS]: {
+    title: "Opciones de IA",
+    snapPoints: ["50%"],
+    content: (props) => <AITabs handleLoading={props.handleLoading} />,
   },
 };
 
@@ -157,7 +164,7 @@ export default function useCreate() {
         ingredients,
         steps,
         categories,
-      }
+      };
       const currentDate = new Date();
 
       // save recipe to local storage
@@ -175,7 +182,7 @@ export default function useCreate() {
         fileType
       );
 
-      let message = "Su receta ha si guardada"
+      let message = "Su receta ha si guardada";
 
       // send recipe to backend if user have selected public status
       if (status === STATUS_OPTIONS.PUBLIC) {
@@ -335,6 +342,10 @@ export default function useCreate() {
     updateFormState({ [key]: value });
   };
 
+  const handleLoading = (isLoading) => {
+    console.log("handleLoading", isLoading);
+  };
+
   return {
     /* Form State */
     title: formState.title,
@@ -369,5 +380,8 @@ export default function useCreate() {
     /* Bottom sheet */
     BottomSheetViews,
     BottomSheetConfig,
+
+    /* AI options */
+    handleLoading
   };
 }

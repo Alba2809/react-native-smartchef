@@ -11,7 +11,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import { useEffect } from "react";
-import useCategoryStore from "../../store/categoryStore";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import useHome from "../../hooks/useHome";
@@ -65,7 +64,7 @@ export default function index() {
       categories: filtersState.categories,
       baseFilter,
       user: user.username,
-    })
+    });
   }, [baseFilter]);
 
   return (
@@ -157,26 +156,14 @@ export default function index() {
           </View>
         </View>
 
-        {/* Empty list */}
-        {/* {allRecipes.length === 0 && (
-          <View style={{}}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: COLORS.textDark,
-              }}
-            >
-              Aún no tienes ninguna receta guardada...
-            </Text>
-          </View>
-        )} */}
-
         {/* Recipes list */}
         {/* TODO: fix the keyExtractor, to use the item._id */}
         <Animated.FlatList
           ref={flatListRef}
           data={allRecipes}
-          renderItem={({ item }) => <RecipeCard item={item} localusername={user.username} />}
+          renderItem={({ item }) => (
+            <RecipeCard item={item} localusername={user.username} />
+          )}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}

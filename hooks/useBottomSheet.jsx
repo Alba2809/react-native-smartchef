@@ -20,7 +20,9 @@ export default function useBottomSheet({
   const bottomSheetContent = useMemo(() => {
     if (!currentBsConfig) return null;
 
-    return currentBsConfig.content(dataProps)
+    const content = currentBsConfig.content;
+
+    return typeof content === "function" ? content(dataProps) : content;
   }, [bsView, BottomSheetConfig, dataProps])
 
   return {

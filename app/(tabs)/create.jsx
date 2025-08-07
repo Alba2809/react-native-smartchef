@@ -22,6 +22,7 @@ import RadioButtonGroup from "../../components/RadioButtonGroup";
 import useCreate from "../../hooks/useCreate";
 import useBottomSheet from "../../hooks/useBottomSheet";
 import { useEffect } from "react";
+import AITabs from "../../components/AITabs";
 
 const RadioOption = (title, subtitle) => (
   <View style={Buttons.textContainerRadio}>
@@ -65,6 +66,9 @@ export default function create() {
     /* Bottom sheet manager */
     BottomSheetViews,
     BottomSheetConfig,
+
+    /* AI options */
+    handleLoading
   } = useCreate();
 
   const {
@@ -85,12 +89,9 @@ export default function create() {
       handleAddStep,
       handleRemoveStep,
       totalSteps: steps.length || 0,
+      handleLoading
     },
   });
-
-  useEffect(() => {
-    console.log("Create render");
-  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -120,12 +121,15 @@ export default function create() {
           <View style={AIStyles.textContainerAI}>
             <Text style={AIStyles.titleAI}>¿Necesitas ayuda?</Text>
             <Text style={AIStyles.subtitleAI}>
-              Utiliza una foto de la receta para registrar la información.
+              Utiliza diferentes técnicas para registrar tu receta.
             </Text>
           </View>
-          <TouchableOpacity style={Buttons.buttonAI}>
+          <TouchableOpacity
+            style={Buttons.buttonAI}
+            onPress={() => handlePresentModalPress(BottomSheetViews.AI_OPTIONS)}
+          >
             <Ionicons name="pencil-outline" size={15} color={COLORS.primary} />
-            <Text style={Buttons.buttonTextAI}>Rellenar con IA</Text>
+            <Text style={Buttons.buttonTextAI}>Opciones con IA</Text>
           </TouchableOpacity>
         </LinearGradient>
 
