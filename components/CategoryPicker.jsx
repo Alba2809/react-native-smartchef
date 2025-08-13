@@ -10,6 +10,13 @@ export default function CategoryPicker({ handleCategory, categoriesSelected }) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  const isIncluded = (category) => {
+    const idIncluded = categoriesSelected?.includes(category._id);
+    const nameIncluded = categoriesSelected?.includes(category.name);
+
+    return idIncluded || nameIncluded;
+  }
+
   const options = categories.map((value) => (
     <TouchableOpacity
       key={value._id}
@@ -20,14 +27,14 @@ export default function CategoryPicker({ handleCategory, categoriesSelected }) {
         borderWidth: 1,
         borderColor: COLORS.border,
         padding: 8,
-        borderColor: categoriesSelected?.includes(value._id)
+        borderColor: isIncluded(value)
           ? COLORS.primary
           : COLORS.border,
       }}
     >
       <Text
         style={{
-          color: categoriesSelected?.includes(value._id)
+          color: isIncluded(value)
             ? COLORS.primary
             : COLORS.textDark,
         }}

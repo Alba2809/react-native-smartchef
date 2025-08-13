@@ -1,8 +1,8 @@
 import * as FileSystem from "expo-file-system";
 
-export const imageData = async (uri, base64Original) => {
+export const getImageData = async (uri, base64Original) => {
   const base64 = base64Original ?? await getBase64(uri);
-  const type = imageType(uri);
+  const type = getImageType(uri);
   return `data:${type};base64,${base64}`;
 };
 
@@ -14,7 +14,7 @@ export const getBase64 = async (uri) => {
   return base64;
 };
 
-export const imageType = (uri) => {
+export const getImageType = (uri) => {
   const uriParts = uri.split(".");
   const fileType = uriParts[uriParts.length - 1];
   return fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";

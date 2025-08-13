@@ -24,6 +24,8 @@ import useDetails from "../../hooks/useDetails";
 import LoadingPage from "@/components/LoadingPage";
 import { useEffect } from "react";
 import useFavoriteStore from "../../store/favoriteStore";
+import CategoriesList from "../../components/CategoriesList";
+import useCategoryStore from "../../store/categoryStore";
 
 const BottomSheetViews = {
   INGREDIENTS: "INGREDIENTS",
@@ -46,6 +48,7 @@ const BottomSheetConfig = {
 const DetailsScreen = () => {
   const { id } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
+  const { categories } = useCategoryStore();
 
   const {
     scrollY,
@@ -56,8 +59,6 @@ const DetailsScreen = () => {
     recipe,
     getRecipe,
     loading,
-    refreshRecipe,
-    refreshing,
 
     handleFavorite,
     loadingFavorite,
@@ -92,12 +93,6 @@ const DetailsScreen = () => {
   const goBack = () => {
     router.back();
   };
-
-  useEffect(() => {
-    if (recipe) {
-      console.log(recipe)
-    }
-  }, [recipe?._id, recipe?.uploaded]);
 
   return (
     <View
@@ -206,7 +201,7 @@ const DetailsScreen = () => {
                 <TouchableOpacity
                   style={styles.btnLikes}
                   onPress={handleFavorite}
-                  disabled={loadingFavorite}
+                  disabled={loadingFavorite || isTheOwner}
                 >
                   <Ionicons
                     name={recipe.isFavorite ? "heart" : "heart-outline"}
@@ -240,57 +235,65 @@ const DetailsScreen = () => {
               {/* Description */}
               <Text style={styles.description}>{recipe.description}</Text>
 
-              {/* Divider */}
-              <View style={styles.divider} />
+              {/* Categories */}
+              <CategoriesList
+                recipeCategories={recipe.categories}
+                categoriesArray={categories}
+              />
 
               {/* Recipe manager (Delete, sahre) when the user is the owner */}
               {isTheOwner && (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    width: "100%",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      paddingVertical: 6,
-                      paddingHorizontal: 16,
-                      borderRadius: 10,
-                      backgroundColor: COLORS.primary,
-                    }}
-                    onPress={confirmDelete}
-                    disabled={deleting}
-                  >
-                    {deleting ? (
-                      <ActivityIndicator size="small" color="white" />
-                    ) : (
-                      <Ionicons name="trash-bin" size={20} color="white" />
-                    )}
-                  </TouchableOpacity>
+                <>
+                  {/* Divider */}
+                  <View style={styles.divider} />
 
-                  <TouchableOpacity
+                  <View
                     style={{
-                      paddingVertical: 6,
-                      paddingHorizontal: 16,
-                      borderRadius: 10,
-                      backgroundColor: COLORS.secondary,
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-around",
+                      alignItems: "center",
                     }}
-                    onPress={uploadRecipe}
-                    disabled={sending}
                   >
-                    {sending ? (
-                      <ActivityIndicator size="small" color="white" />
-                    ) : (
-                      <Ionicons
-                        name="share-social-outline"
-                        size={20}
-                        color="white"
-                      />
-                    )}
-                  </TouchableOpacity>
-                </View>
+                    <TouchableOpacity
+                      style={{
+                        paddingVertical: 6,
+                        paddingHorizontal: 16,
+                        borderRadius: 10,
+                        backgroundColor: COLORS.primary,
+                      }}
+                      onPress={confirmDelete}
+                      disabled={deleting}
+                    >
+                      {deleting ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Ionicons name="trash-bin" size={20} color="white" />
+                      )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={{
+                        paddingVertical: 6,
+                        paddingHorizontal: 16,
+                        borderRadius: 10,
+                        backgroundColor: recipe.uploaded ? "lightgray" : COLORS.secondary,
+                      }}
+                      onPress={uploadRecipe}
+                      disabled={sending || recipe.uploaded}
+                    >
+                      {sending ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Ionicons
+                          name="share-social-outline"
+                          size={20}
+                          color="white"
+                        />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </>
               )}
             </View>
 

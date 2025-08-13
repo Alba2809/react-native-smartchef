@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,8 +22,6 @@ import BottomSheetManager from "../../components/BottomSheetManager";
 import RadioButtonGroup from "../../components/RadioButtonGroup";
 import useCreate from "../../hooks/useCreate";
 import useBottomSheet from "../../hooks/useBottomSheet";
-import { useEffect } from "react";
-import AITabs from "../../components/AITabs";
 
 const RadioOption = (title, subtitle) => (
   <View style={Buttons.textContainerRadio}>
@@ -62,36 +61,63 @@ export default function create() {
     /* Submit state */
     handleSubmit,
     handlePreview,
+    isLoading,
 
     /* Bottom sheet manager */
     BottomSheetViews,
     BottomSheetConfig,
+    bottomSheetRef,
+    isAIProcessLoading,
 
-    /* AI options */
-    handleLoading
+    /* AI options - OCR */
+    handleExtractText,
+    extractTextState,
+    updateExtractTextState,
+
+    /* AI options - New Recipe */
+    handleNewRecipe,
+    newRecipeState,
+    updateNewRecipeState,
+
+    /* AI options - From Photo */
+    handleFromPhoto,
+    fromPhotoState,
+    updateFromPhotoState,
   } = useCreate();
 
-  const {
-    handlePresentModalPress,
-    bottomSheetRef,
-    currentBsConfig,
-    bottomSheetContent,
-  } = useBottomSheet({
-    BottomSheetViews,
-    BottomSheetConfig,
-    dataProps: {
-      handleCategory,
-      categories,
-      ingredients,
-      handleAddIngredient,
-      handleRemoveIngredient,
-      steps,
-      handleAddStep,
-      handleRemoveStep,
-      totalSteps: steps.length || 0,
-      handleLoading
-    },
-  });
+  const { handlePresentModalPress, currentBsConfig, bottomSheetContent } =
+    useBottomSheet({
+      bottomSheetRef,
+      BottomSheetViews,
+      BottomSheetConfig,
+      dataProps: {
+        handleCategory,
+        categories,
+        ingredients,
+        handleAddIngredient,
+        handleRemoveIngredient,
+        steps,
+        handleAddStep,
+        handleRemoveStep,
+        totalSteps: steps.length || 0,
+
+        ExtractTextOptions: {
+          handleExtractText,
+          extractTextState,
+          updateExtractTextState,
+        },
+        NewRouteOptions: {
+          handleNewRecipe,
+          newRecipeState,
+          updateNewRecipeState,
+        },
+        FromPhotoRouteOptions: {
+          handleFromPhoto,
+          fromPhotoState,
+          updateFromPhotoState,
+        },
+      },
+    });
 
   return (
     <KeyboardAvoidingView
@@ -127,9 +153,23 @@ export default function create() {
           <TouchableOpacity
             style={Buttons.buttonAI}
             onPress={() => handlePresentModalPress(BottomSheetViews.AI_OPTIONS)}
+            disabled={isAIProcessLoading}
           >
-            <Ionicons name="pencil-outline" size={15} color={COLORS.primary} />
-            <Text style={Buttons.buttonTextAI}>Opciones con IA</Text>
+            {isAIProcessLoading ? (
+              <>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+                <Text style={Buttons.buttonTextAI}>Procesando...</Text>
+              </>
+            ) : (
+              <>
+                <Ionicons
+                  name="pencil-outline"
+                  size={15}
+                  color={COLORS.primary}
+                />
+                <Text style={Buttons.buttonTextAI}>Opciones con IA</Text>
+              </>
+            )}
           </TouchableOpacity>
         </LinearGradient>
 
@@ -202,7 +242,7 @@ export default function create() {
 
         {/* Categories bottom sheet */}
         <View style={Base.card}>
-          <Text style={Base.titleCard}>Categorías</Text>
+          <Text style={Base.titleCard}>Categorías ({categories.length})</Text>
           <TouchableOpacity
             style={Buttons.buttonSecondary}
             onPress={() => handlePresentModalPress(BottomSheetViews.CATEGORIES)}
@@ -213,7 +253,9 @@ export default function create() {
 
         {/* Ingredientes */}
         <View style={Base.card}>
-          <Text style={Base.titleCard}>Ingredientes</Text>
+          <Text style={Base.titleCard}>
+            Ingredientes ({ingredients.length})
+          </Text>
           <TouchableOpacity
             style={{ ...Buttons.buttonSecondary, marginBottom: 5 }}
             onPress={() =>
@@ -235,7 +277,9 @@ export default function create() {
 
         {/* Steps */}
         <View style={Base.card}>
-          <Text style={Base.titleCard}>Pasos de preparación</Text>
+          <Text style={Base.titleCard}>
+            Pasos de preparación ({steps.length})
+          </Text>
           <TouchableOpacity
             style={{ ...Buttons.buttonSecondary, marginBottom: 5 }}
             onPress={() => handlePresentModalPress(BottomSheetViews.NEW_STEP)}
@@ -277,8 +321,14 @@ export default function create() {
         </View>
 
         {/* Submit button */}
-        <TouchableOpacity style={Buttons.buttonSubmit} onPress={handleSubmit}>
-          <Text style={Buttons.buttonTextSubmit}>Guardar Receta</Text>
+        <TouchableOpacity style={Buttons.buttonSubmit} onPress={handleSubmit} disabled={isLoading}>
+          {
+            isLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text style={Buttons.buttonTextSubmit}>Guardar Receta</Text>
+            )
+          }
         </TouchableOpacity>
 
         <TouchableOpacity

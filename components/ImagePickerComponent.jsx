@@ -17,10 +17,15 @@ import Toast from "react-native-toast-message";
 export default function ImagePickerComponent({
   image,
   setImage,
-  setImageBase64,
+  setImageBase64 = null,
+  title = "Seleccionar una imagen",
+  imageOptions = {},
+  allowTouch = true,
 }) {
   const pickImage = async () => {
     try {
+      if (!allowTouch) return;
+
       if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,14 +42,17 @@ export default function ImagePickerComponent({
         }
       }
 
-      // launch image library
-      const result = await ImagePicker.launchImageLibraryAsync({
+      const options = {
         mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.5,
         base64: true,
-      });
+        ...imageOptions,
+      };
+
+      // launch image library
+      const result = await ImagePicker.launchImageLibraryAsync(options);
 
       if (!result.canceled) {
         const asset = result.assets[0];
@@ -52,6 +60,8 @@ export default function ImagePickerComponent({
         setImage(asset.uri);
 
         // if base64 is provided, use it
+        if (!setImageBase64) return;
+
         if (asset.base64) {
           setImageBase64(asset.base64);
         } else {
@@ -62,7 +72,6 @@ export default function ImagePickerComponent({
         }
       }
     } catch (error) {
-      console.log("Error selecting image: ", error);
       // Alert.alert("Error", "No se pudo seleccionar la imagen");
       Toast.show({
         type: "error",
@@ -81,7 +90,11 @@ export default function ImagePickerComponent({
       accessibilityLabel="Selector de imagen"
     >
       {image ? (
-        <Image source={{ uri: image }} style={ImagePickerStyles.previewImage} />
+        <Image
+          source={{ uri: image }}
+          style={ImagePickerStyles.previewImage}
+          resizeMode="contain"
+        />
       ) : (
         <View style={ImagePickerStyles.placeholderContainer}>
           <Ionicons
@@ -89,9 +102,7 @@ export default function ImagePickerComponent({
             size={40}
             color={COLORS.textSecondary}
           />
-          <Text style={ImagePickerStyles.placeholderText}>
-            Seleccionar una imagen
-          </Text>
+          <Text style={ImagePickerStyles.placeholderText}>{title}</Text>
         </View>
       )}
     </TouchableOpacity>

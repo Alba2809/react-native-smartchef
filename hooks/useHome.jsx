@@ -37,6 +37,7 @@ export default function useHome() {
       categories: [],
     }
   );
+  const bottomSheetRef = useRef(null);
 
   const { allRecipes, getAllRecipes } = useRecipeStore();
 
@@ -92,5 +93,6 @@ export default function useHome() {
     // Bottom sheet
     BottomSheetViews,
     BottomSheetConfig,
+    bottomSheetRef,
   };
 }

@@ -1,7 +1,12 @@
-import { useReducer, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import { createRecipe } from "../api/recipe";
-import { imageData, imageType } from "../utils/image";
+import {
+  processWithOCR,
+  processWithNewIdea,
+  processWithImage,
+} from "../api/ai";
+import { getImageData, getImageType } from "../utils/image";
 import * as FileSystem from "expo-file-system";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
@@ -72,8 +77,14 @@ const BottomSheetConfig = {
   },
   [BottomSheetViews.AI_OPTIONS]: {
     title: "Opciones de IA",
-    snapPoints: ["50%"],
-    content: (props) => <AITabs handleLoading={props.handleLoading} />,
+    snapPoints: ["60%"],
+    content: (props) => (
+      <AITabs
+        ExtractTextOptions={props.ExtractTextOptions}
+        NewRouteOptions={props.NewRouteOptions}
+        FromPhotoRouteOptions={props.FromPhotoRouteOptions}
+      />
+    ),
   },
 };
 
@@ -106,71 +117,73 @@ export default function useCreate() {
     IMAGE: "image",
     TOTAL_TIME: "totalTime",
   };
+  const bottomSheetRef = useRef(null);
 
   const router = useRouter();
 
   // get user token
   const { token, user } = useAuthStore();
 
-  const { saveLocalRecipe } = useRecipeStore();
+  const { saveLocalRecipe, updateLocalRecipe } = useRecipeStore();
 
   /*  */
   const [status, setStatus] = useState(STATUS_OPTIONS.PRIVATE);
 
   const handleSubmit = async () => {
-    if (isLoading) return;
-
-    const {
-      title,
-      description,
-      image,
-      totalTime,
-      ingredients,
-      steps,
-      categories,
-    } = formState;
-
-    // validate that all fields are filled
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      !image ||
-      !totalTime.trim() ||
-      !ingredients.length ||
-      !steps.length ||
-      !categories.length
-    ) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Faltan campos obligatorios",
-        position: "top",
-        text1Style: { fontSize: 14 },
-      });
-      return;
-    }
-
     try {
+      if (isLoading) return;
+    
+      const {
+        title,
+        description,
+        image,
+        totalTime,
+        ingredients,
+        steps,
+        categories,
+      } = formState;
+    
+      // validate that all fields are filled
+      if (
+        !title.trim() ||
+        !description.trim() ||
+        !image ||
+        !String(totalTime).trim() ||
+        !ingredients.length ||
+        !steps.length ||
+        !categories.length
+      ) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Faltan campos obligatorios",
+          position: "top",
+          text1Style: { fontSize: 14 },
+        });
+        return;
+      }
+
       setIsLoading(true);
 
       // get file extension form URI or default to jpeg
-      const fileType = imageType(image);
-      const imageDataUrl = imageData(image, imageBase64);
+      const fileType = getImageType(image);
+      const imageDataUrl = await getImageData(image, imageBase64);
 
       const dataFormatted = {
         title: title.trim(),
         description: description.trim(),
-        totalTime: +totalTime,
+        totalTime: parseInt(totalTime),
         ingredients,
         steps,
         categories,
       };
       const currentDate = new Date();
+      const newId = currentDate.getTime().toString();
 
       // save recipe to local storage
-      await handleSaveLocal(
+      const localRecipe =await handleSaveLocal(
         {
-          _id: currentDate.getTime().toString(),
+          _id: newId,
           ...dataFormatted,
           favoriteCount: 0,
           createdAt: currentDate.toISOString(),
@@ -182,24 +195,34 @@ export default function useCreate() {
         fileType
       );
 
-      let message = "Su receta ha si guardada";
+      Toast.show({
+        type: "success",
+        text1: "Se ha guardado la receta localmente",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
 
       // send recipe to backend if user have selected public status
       if (status === STATUS_OPTIONS.PUBLIC) {
-        await handlePublish({
+        const recipePublished = await handlePublish({
           ...dataFormatted,
           image: imageDataUrl,
         });
 
-        message = "Su receta ha sido publicada y guardada";
-      }
+        // after publishing, update the local recipe with the new _id
+        updateLocalRecipe(newId, {
+          ...localRecipe,
+          _id: recipePublished._id,
+          uploaded: true,
+        });
 
-      Toast.show({
-        type: "success",
-        text1: message,
-        position: "top",
-        text1Style: { fontSize: 14 },
-      });
+        Toast.show({
+          type: "success",
+          text1: "Se ha publicado la receta",
+          position: "top",
+          text1Style: { fontSize: 14 },
+        });
+      }
 
       // reset form state
       updateFormState({
@@ -211,11 +234,11 @@ export default function useCreate() {
         steps: [],
         categories: [],
       });
+      setImageBase64(null);
 
       // redirect to home page
       router.replace("/");
     } catch (error) {
-      console.log(error);
       Toast.show({
         type: "error",
         text1: "Error",
@@ -238,6 +261,8 @@ export default function useCreate() {
     };
 
     await saveLocalRecipe(recipe);
+
+    return recipe;
   };
 
   const handlePublish = async (formData) => {
@@ -248,6 +273,8 @@ export default function useCreate() {
     if (!res.ok) {
       throw new Error(data.error || "Error al publicar la receta");
     }
+
+    return data.recipe
   };
 
   const handlePreview = async () => {};
@@ -342,9 +369,248 @@ export default function useCreate() {
     updateFormState({ [key]: value });
   };
 
-  const handleLoading = (isLoading) => {
-    console.log("handleLoading", isLoading);
+  /* AI - OCR Option */
+  const [extractTextState, updateExtractTextState] = useReducer(
+    (prev, next) => {
+      return { ...prev, ...next };
+    },
+    {
+      isLoading: false,
+      error: null,
+      image: null,
+      imageBase64: null,
+      text: null,
+    }
+  );
+
+  const handleExtractText = async () => {
+    try {
+      if (extractTextState.isLoading || !extractTextState.imageBase64 || !extractTextState.image)
+        return;
+
+      updateExtractTextState({ isLoading: true });
+
+      Toast.show({
+        type: "info",
+        text1: "Procesando imagen, no cierre esta ventana...",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      const imageType = getImageType(extractTextState.image);
+
+      const res = await processWithOCR(
+        {
+          imageBase64: extractTextState.imageBase64,
+          imageType,
+        },
+        token
+      );
+      const data = await res.json();
+
+      if (!res.ok || !data.recipe) {
+        throw new Error(data.error || "No se pudo obtener información de la receta");
+      }
+
+      // update the recipe with the extracted text
+      updateFormState({
+        title: data.recipe.title ?? "",
+        description: data.recipe.description ?? "",
+        ingredients: data.recipe.ingredients ?? [],
+        steps: data.recipe.steps ?? [],
+        totalTime: data.recipe.totalTime ?? 0,
+        categories: data.recipe.categories ?? [],
+        image: extractTextState.image,
+      });
+      setImageBase64(extractTextState.imageBase64);
+
+      Toast.show({
+        type: "success",
+        text1: "Se ha obtenido la información de la receta",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      // close the bottom sheet
+      bottomSheetRef.current.close();
+    } catch (error) {
+      updateExtractTextState({ image: null, imageBase64: null });
+
+      const message =
+        error?.message || "No se pudo extraer el texto de la imagen";
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: message,
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      updateExtractTextState({ isLoading: false });
+    }
   };
+
+  /* AI - New Recipe Option */
+  const [newRecipeState, updateNewRecipeState] = useReducer(
+    (prev, next) => {
+      return { ...prev, ...next };
+    },
+    {
+      isLoading: false,
+      error: null,
+      title: null,
+      description: null,
+    }
+  );
+
+  const handleNewRecipe = async () => {
+    try {
+      if (
+        newRecipeState.isLoading ||
+        !newRecipeState.title ||
+        !newRecipeState.description
+      )
+        return;
+
+      updateNewRecipeState({ isLoading: true });
+
+      Toast.show({
+        type: "info",
+        text1: "Procesando texto, no cierre esta ventana...",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      const res = await processWithNewIdea(
+        {
+          title: newRecipeState.title,
+          description: newRecipeState.description,
+        },
+        token
+      );
+      const data = await res.json();
+
+      if (!res.ok || !data.recipe) {
+        throw new Error(data.error || "Error al crear la receta");
+      }
+
+      const newRecipe = data.recipe;
+      
+      updateFormState({
+        title: newRecipe.title,
+        description: newRecipe.description,
+        ingredients: newRecipe.ingredients,
+        steps: newRecipe.steps,
+        totalSteps: newRecipe.totalSteps,
+        categories: newRecipe.categories,
+        totalTime: newRecipe.totalTime,
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "Información de la receta creada",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      // close the bottom sheet
+      bottomSheetRef.current.close();
+    } catch (error) {
+      const message = error?.message || "No se pudo crear la receta";
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: message,
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      updateNewRecipeState({ isLoading: false });
+    }
+  };
+
+  /* AI - From Photo Option */
+  const [fromPhotoState, updateFromPhotoState] = useReducer(
+    (prev, next) => {
+      return { ...prev, ...next };
+    },
+    {
+      isLoading: false,
+      error: null,
+      image: null,
+      imageBase64: null,
+    }
+  );
+
+  const handleFromPhoto = async () => {
+    try {
+      if (
+        fromPhotoState.isLoading ||
+        !fromPhotoState.imageBase64 ||
+        !fromPhotoState.image
+      )
+        return;
+
+      updateFromPhotoState({ isLoading: true });
+
+      Toast.show({
+        type: "info",
+        text1: "Procesando imagen, no cierre esta ventana...",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      const imageType = getImageType(fromPhotoState.image);
+
+      const res = await processWithImage(
+        {
+          imageBase64: fromPhotoState.imageBase64,
+          imageType,
+        },
+        token
+      );
+      const data = await res.json();
+
+      if (!res.ok || !data.recipe) {
+        throw new Error(data.error || "Error al extraer texto de la imagen");
+      }
+
+      // update the recipe with the extracted text
+      updateFormState({
+        title: data.recipe.title ?? "",
+        description: data.recipe.description ?? "",
+        ingredients: data.recipe.ingredients ?? [],
+        steps: data.recipe.steps ?? [],
+        totalTime: data.recipe.totalTime ?? 0,
+        categories: data.recipe.categories ?? [],
+        image: fromPhotoState.image,
+      });
+      setImageBase64(fromPhotoState.imageBase64);
+
+      Toast.show({
+        type: "success",
+        text1: "Se ha obtenido la información de la receta",
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+
+      // close the bottom sheet
+      bottomSheetRef.current.close();
+    } catch (error) {
+      const message = error?.message || "No se pudo obtener la información de la receta";
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: message,
+        position: "top",
+        text1Style: { fontSize: 14 },
+      });
+    } finally {
+      updateFromPhotoState({ isLoading: false });
+    }
+  };
+
+  const isAIProcessLoading = extractTextState.isLoading || newRecipeState.isLoading || fromPhotoState.isLoading;
 
   return {
     /* Form State */
@@ -376,12 +642,27 @@ export default function useCreate() {
     /* Submit state */
     handleSubmit,
     handlePreview,
+    isLoading,
 
     /* Bottom sheet */
     BottomSheetViews,
     BottomSheetConfig,
+    bottomSheetRef,
+    isAIProcessLoading,
 
-    /* AI options */
-    handleLoading
+    /* AI options - OCR */
+    handleExtractText,
+    extractTextState,
+    updateExtractTextState,
+
+    /* AI options - New Recipe */
+    handleNewRecipe,
+    newRecipeState,
+    updateNewRecipeState,
+
+    /* AI options - From Photo */
+    handleFromPhoto,
+    fromPhotoState,
+    updateFromPhotoState,
   };
 }

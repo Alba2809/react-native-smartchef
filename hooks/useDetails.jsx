@@ -6,7 +6,7 @@ import {
 } from "../api/recipe";
 import { Alert, Animated } from "react-native";
 import { createDeleteFavorite } from "../api/favorite";
-import { deleteImage, imageData } from "../utils/image";
+import { deleteImage, getImageData } from "../utils/image";
 import { useRouter, useNavigation } from "expo-router";
 import useRecipeStore from "../store/recipeStore";
 import Toast from "react-native-toast-message";
@@ -79,7 +79,6 @@ export default function useDetails({ id }) {
 
       setRecipe(data.recipe);
     } catch (error) {
-      console.log(error);
       Toast.show({
         type: "error",
         text1: "Error",
@@ -163,7 +162,6 @@ export default function useDetails({ id }) {
 
       setRecipe(data.recipe);
     } catch (error) {
-      console.log(error);
       Toast.show({
         type: "error",
         text1: "Error",
@@ -182,7 +180,7 @@ export default function useDetails({ id }) {
 
       setSending(true);
 
-      const image = await imageData(recipe.image);
+      const image = await getImageData(recipe.image);
 
       const dataFormatted = {
         clientId: recipe._id,
@@ -225,7 +223,6 @@ export default function useDetails({ id }) {
         text1Style: { fontSize: 14 },
       });
     } catch (error) {
-      console.log(error)
       const message = error?.message || "No se pudo publicar la receta";
       Toast.show({
         type: "error",

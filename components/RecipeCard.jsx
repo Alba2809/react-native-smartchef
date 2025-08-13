@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import useCategoryStore from "../store/categoryStore";
 import { useCallback, useMemo, memo } from "react";
+import CategoriesList from "./CategoriesList";
 
 const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
   const { categories } = useCategoryStore();
@@ -78,7 +79,7 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
           {item.description}
         </Text>
 
-        <CategoriesName
+        <CategoriesList
           recipeCategories={item.categories}
           categoriesArray={categories}
         />
@@ -95,43 +96,6 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
     </View>
   );
 });
-
-const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-
-const CategoriesName = memo(
-  ({ recipeCategories, categoriesArray }) => {
-    const itemsToShow = useMemo(() => {
-      return recipeCategories
-        .map((recipeCategory) => {
-          const name =
-            recipeCategory?.name ??
-            categoriesArray.find(
-              (c) => c._id.toString() === recipeCategory.toString()
-            )?.name;
-
-          return name ? capitalize(name) : null;
-        })
-        .filter(Boolean);
-    }, [recipeCategories, categoriesArray]);
-
-    return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesWrapper}
-      >
-        {itemsToShow.map((category, index) => (
-          <View key={index} style={styles.categoryBadge}>
-            <Text style={styles.categoryText}>{category}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    );
-  },
-  (prevProps, nextProps) =>
-    prevProps.recipeCategories === nextProps.recipeCategories &&
-    prevProps.categoriesArray === nextProps.categoriesArray
-);
 
 const styles = StyleSheet.create({
   card: {
@@ -193,20 +157,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     minHeight: 50,
-  },
-  categoriesWrapper: {
-    alignItems: "center",
-    gap: 8,
-  },
-  categoryBadge: {
-    backgroundColor: "#e9e9e8",
-    borderRadius: 100,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  categoryText: {
-    fontSize: 13,
-    color: "gray",
   },
   divider: {
     borderTopWidth: 1,

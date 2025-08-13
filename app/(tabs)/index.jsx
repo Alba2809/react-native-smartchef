@@ -37,14 +37,15 @@ export default function index() {
 
     BottomSheetViews,
     BottomSheetConfig,
+    bottomSheetRef
   } = useHome();
 
   const {
     currentBsConfig,
-    bottomSheetRef,
     bottomSheetContent,
     handlePresentModalPress,
   } = useBottomSheet({
+    bottomSheetRef,
     BottomSheetViews,
     BottomSheetConfig,
     dataProps: {

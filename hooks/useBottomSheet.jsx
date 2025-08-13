@@ -4,8 +4,9 @@ export default function useBottomSheet({
   BottomSheetViews,
   BottomSheetConfig,
   dataProps = {},
+  bottomSheetRef,
 }) {
-  const bottomSheetRef = useRef(null);
+  // const bottomSheetRef = ref || useRef(null);
   const [bsView, setBsView] = useState(() => {
     const defaultKey = Object.keys(BottomSheetViews)[0];
     return BottomSheetViews[defaultKey];
