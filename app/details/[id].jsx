@@ -148,7 +148,7 @@ const DetailsScreen = () => {
             contentContainerStyle={{
               gap: 20,
             }}
-            style={[styles.scrollView, { marginTop: insets.top + 56 }]}
+            style={[styles.scrollView, { paddingTop: insets.top + 56 }]}
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
               { useNativeDriver: false }

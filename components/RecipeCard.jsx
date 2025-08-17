@@ -47,6 +47,7 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
             backgroundColor: COLORS.white,
             borderRadius: 100,
           }}
+          transition={500}
         />
         <View style={{ flex: 1, flexDirection: "column" }}>
           <Text style={styles.title}>{item.title}</Text>
@@ -67,7 +68,11 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
           </View>
         )}
       </View>
-      <ImageBackground source={{ uri: item.image }} style={styles.imageWrapper}>
+      <ImageBackground
+        source={{ uri: item.image }}
+        style={styles.imageWrapper}
+        transition={500}
+      >
         <View style={styles.timeBadge}>
           <Text style={styles.timeText}>{item.totalTime} min</Text>
         </View>
