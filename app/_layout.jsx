@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import SafeScreen from "../components/SafeScreen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import SafeScreen from "../components/common/SafeScreen";
 import Toast from "react-native-toast-message";
 
 export default function RootLayout() {

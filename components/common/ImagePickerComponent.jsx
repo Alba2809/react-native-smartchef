@@ -2,13 +2,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
   Image,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ImagePicker as ImagePickerStyles } from "../assets/styles/create/create.styles";
-import COLORS from "../constants/colors";
+import { ImagePicker as ImagePickerStyles } from "../../assets/styles/create/create.styles";
+import COLORS from "../../constants/colors";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";

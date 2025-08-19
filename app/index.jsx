@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import LoadingPage from "@/components/LoadingPage";
+import LoadingPage from "../components/common/LoadingPage";
 import useAuthStore from "@/store/authStore";
 import useCategoryStore from "@/store/categoryStore";
 

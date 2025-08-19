@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import ImagePickerComponent from "../ImagePickerComponent";
+import ImagePickerComponent from "../common/ImagePickerComponent";
 import buttonsStyles from "../../assets/styles/create/buttons.styles";
 
 const ExtractTextRoute = ({

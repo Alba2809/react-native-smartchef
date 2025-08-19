@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import CategoryPicker from "./CategoryPicker";
-import COLORS from "../constants/colors";
+import CategoryPicker from "../recipes/CategoryPicker";
+import COLORS from "../../constants/colors";
 
 const CategoryFilter = ({
   handleCategory,

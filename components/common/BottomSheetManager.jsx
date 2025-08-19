@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { Keyboard, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import styles from "../assets/styles/bottomSheet.styles";
+import styles from "../../assets/styles/bottomSheet.styles";
 
 export default function BottomSheetManager({
   children,

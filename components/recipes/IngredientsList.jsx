@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Ingredients as IngredientsStyles } from "../assets/styles/create/create.styles";
-import COLORS from "../constants/colors";
+import { Ingredients as IngredientsStyles } from "../../assets/styles/create/create.styles";
+import COLORS from "../../constants/colors";
 
 export default function IngredientsList({
   ingredients = [],

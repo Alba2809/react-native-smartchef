@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import useCategoryStore from "../store/categoryStore";
-import COLORS from "../constants/colors";
+import useCategoryStore from "../../store/categoryStore";
+import COLORS from "../../constants/colors";
 
 export default function CategoryPicker({ handleCategory, categoriesSelected }) {
   const { categories } = useCategoryStore();

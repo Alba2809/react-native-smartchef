@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Text, View, useWindowDimensions } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import COLORS from "../constants/colors";
-import NewRoute from "./AI/NewRoute";
-import FromPhotoRoute from "./AI/FromPhotoRoute";
-import ExtractTextRoute from "./AI/ExtractTextRoute";
+import COLORS from "../../constants/colors";
+import NewRoute from "./NewRoute";
+import FromPhotoRoute from "./FromPhotoRoute";
+import ExtractTextRoute from "./ExtractTextRoute";
 
 const routes = [
   { key: "first", title: "Extraer" },

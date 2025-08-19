@@ -3,28 +3,23 @@ import { router, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
-  KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  ScrollView,
   Animated,
   ActivityIndicator,
-  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
+import { useEffect } from "react";
 import COLORS from "../../constants/colors";
 import styles from "../../assets/styles/details.styles";
-import BottomSheetManager from "../../components/BottomSheetManager";
-import IngredientsList from "../../components/IngredientsList";
-import StepsList from "../../components/StepsList";
+import BottomSheetManager from "../../components/common/BottomSheetManager";
+import IngredientsList from "../../components/recipes/IngredientsList";
+import StepsList from "../../components/recipes/StepsList";
 import useBottomSheet from "../../hooks/useBottomSheet";
 import useDetails from "../../hooks/useDetails";
-import LoadingPage from "@/components/LoadingPage";
-import { useEffect } from "react";
-import useFavoriteStore from "../../store/favoriteStore";
-import CategoriesList from "../../components/CategoriesList";
+import CategoriesList from "../../components/recipes/CategoriesList";
 import useCategoryStore from "../../store/categoryStore";
 
 const BottomSheetViews = {

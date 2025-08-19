@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { useCallback, useEffect } from "react";
 import COLORS from "../../constants/colors";
-import RecipeCard from "../../components/RecipeCard";
+import RecipeCard from "../../components/recipes/RecipeCard";
 import useSearch from "../../hooks/useSearch";
-import BottomSheetManager from "../../components/BottomSheetManager";
+import BottomSheetManager from "../../components/common/BottomSheetManager";
 import useBottomSheet from "../../hooks/useBottomSheet";
 import useFavoriteStore from "../../store/favoriteStore";
 

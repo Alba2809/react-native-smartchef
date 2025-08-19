@@ -1,9 +1,9 @@
 import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect } from "react";
 import COLORS from "../../constants/colors";
 import useAuthStore from "../../store/authStore";
-import { useEffect } from "react";
 
 export default function _layout() {
   const insets = useSafeAreaInsets();

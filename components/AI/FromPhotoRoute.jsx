@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import buttonsStyles from "../../assets/styles/create/buttons.styles";
-import ImagePickerComponent from "../ImagePickerComponent";
+import ImagePickerComponent from "../common/ImagePickerComponent";
 
 const FromPhotoRoute = ({
   handleFromPhoto,

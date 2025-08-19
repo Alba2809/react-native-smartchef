@@ -5,9 +5,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Steps as StepsStyles, Form as FormStyles } from "../assets/styles/create/create.styles";
-import COLORS from "../constants/colors";
-import ExpandableText from "./ExpandableText";
+import { Steps as StepsStyles, Form as FormStyles } from "../../assets/styles/create/create.styles";
+import COLORS from "../../constants/colors";
+import ExpandableText from "../ExpandableText";
 
 export default function StepsList({ steps = [], handleRemoveStep, playStep = false }) {
   const [expandedIndex, setExpandedIndex] = useState(null);

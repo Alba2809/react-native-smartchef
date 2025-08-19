@@ -10,16 +10,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import COLORS from "../../constants/colors";
 import {
   Buttons,
   Form,
   AIStyles,
   Base,
 } from "../../assets/styles/create/create.styles";
-import ImagePickerComponent from "../../components/ImagePickerComponent";
-import BottomSheetManager from "../../components/BottomSheetManager";
-import RadioButtonGroup from "../../components/RadioButtonGroup";
+import COLORS from "../../constants/colors";
+import ImagePickerComponent from "../../components/common/ImagePickerComponent";
+import BottomSheetManager from "../../components/common/BottomSheetManager";
+import RadioButtonGroup from "../../components/common/RadioButtonGroup";
 import useCreate from "../../hooks/useCreate";
 import useBottomSheet from "../../hooks/useBottomSheet";
 

@@ -5,9 +5,9 @@ import {
   Ingredients as IngredientsStyles,
   Buttons as ButtonsStyles,
   Form as FormStyles,
-} from "../assets/styles/create/create.styles";
+} from "../../assets/styles/create/create.styles";
 import DropDownPicker from "react-native-dropdown-picker";
-import COLORS from "../constants/colors";
+import COLORS from "../../constants/colors";
 import Toast from "react-native-toast-message";
 
 export default function IngredientInput({ handleAddIngredient }) {

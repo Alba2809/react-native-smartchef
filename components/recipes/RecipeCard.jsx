@@ -6,10 +6,10 @@ import {
   View,
 } from "react-native";
 import { Image, ImageBackground } from "expo-image";
-import COLORS from "../constants/colors";
+import COLORS from "../../constants/colors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import useCategoryStore from "../store/categoryStore";
+import useCategoryStore from "../../store/categoryStore";
 import { useCallback, useMemo, memo } from "react";
 import CategoriesList from "./CategoriesList";
 

@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
-import useAuthStore from "../../store/authStore";
 import { useEffect } from "react";
+import useAuthStore from "../../store/authStore";
 
 export default function AuthLayout() {
   const router = useRouter();

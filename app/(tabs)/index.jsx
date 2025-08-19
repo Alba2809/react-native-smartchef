@@ -14,8 +14,8 @@ import { useEffect } from "react";
 import styles from "../../assets/styles/home.styles";
 import COLORS from "../../constants/colors";
 import useHome from "../../hooks/useHome";
-import RecipeCard from "../../components/RecipeCard";
-import BottomSheetManager from "../../components/BottomSheetManager";
+import RecipeCard from "../../components/recipes/RecipeCard";
+import BottomSheetManager from "../../components/common/BottomSheetManager";
 import useBottomSheet from "../../hooks/useBottomSheet";
 
 export default function index() {

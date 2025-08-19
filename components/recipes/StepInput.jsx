@@ -6,8 +6,8 @@ import {
   Steps as StepsStyles,
   Buttons as ButtonsStyles,
   Form as FormStyles,
-} from "../assets/styles/create/create.styles";
-import COLORS from "../constants/colors";
+} from "../../assets/styles/create/create.styles";
+import COLORS from "../../constants/colors";
 
 export default function StepInput({ handleAddStep, totalSteps }) {
   const [text, setText] = useState("");
