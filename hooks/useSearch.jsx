@@ -1,8 +1,8 @@
-import { useCallback, useReducer, useRef, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import { getRecipesRequest } from "../api/recipe";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
-import CategoryFilter from "../components/CategoryFilter";
+import CategoryFilter from "../components/common/CategoryFilter";
 
 const BottomSheetViews = {
   FILTERS: "FILTERS",

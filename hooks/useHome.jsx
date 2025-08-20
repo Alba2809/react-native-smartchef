@@ -1,7 +1,7 @@
 import { useReducer, useRef, useState } from "react";
 import useAuthStore from "../store/authStore";
 import useRecipeStore from "../store/recipeStore";
-import CategoryFilter from "../components/CategoryFilter";
+import CategoryFilter from "../components/common/CategoryFilter";
 
 const FILTER_OPTIONS = {
   ALL: "Todas",

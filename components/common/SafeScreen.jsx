@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import COLORS from "../constants/colors";
 import { useSegments } from "expo-router";
+import COLORS from "../../constants/colors";
 
 export default function SafeScreen({ children }) {
   const insets = useSafeAreaInsets();

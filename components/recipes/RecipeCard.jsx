@@ -6,11 +6,11 @@ import {
   View,
 } from "react-native";
 import { Image, ImageBackground } from "expo-image";
-import COLORS from "../../constants/colors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useCallback, memo } from "react";
+import COLORS from "../../constants/colors";
 import useCategoryStore from "../../store/categoryStore";
-import { useCallback, useMemo, memo } from "react";
 import CategoriesList from "./CategoriesList";
 
 const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {

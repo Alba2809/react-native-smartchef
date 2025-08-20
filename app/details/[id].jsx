@@ -107,7 +107,7 @@ const DetailsScreen = () => {
         ]}
       >
         <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <Ionicons name="arrow-back" size={24} color={"black"} />
+          <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
       </Animated.View>
 

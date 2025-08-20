@@ -10,13 +10,13 @@ import { getImageData, getImageType } from "../utils/image";
 import * as FileSystem from "expo-file-system";
 import useAuthStore from "../store/authStore";
 import Toast from "react-native-toast-message";
-import StepInput from "../components/StepInput";
-import StepsList from "../components/StepsList";
-import IngredientInput from "../components/IngredientInput";
-import IngredientsList from "../components/IngredientsList";
-import CategoryPicker from "../components/CategoryPicker";
+import StepInput from "../components/recipes/StepInput";
+import StepsList from "../components/recipes/StepsList";
+import IngredientInput from "../components/recipes/IngredientInput";
+import IngredientsList from "../components/recipes/IngredientsList";
+import CategoryPicker from "../components/recipes/CategoryPicker";
 import useRecipeStore from "../store/recipeStore";
-import AITabs from "../components/AITabs";
+import AITabs from "../components/AI/AITabs";
 
 const BottomSheetViews = {
   CATEGORIES: "CATEGORIES",
