@@ -13,9 +13,6 @@ const useRecipeStore = create((set, get) => ({
   recipesAPI: [],
   allRecipes: [],
 
-  recipesSavedLoaded: false,
-  recipesAPILoaded: false,
-
   getRecipesSaved: async ({
     title = "",
     categories = [],

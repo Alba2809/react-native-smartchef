@@ -81,8 +81,9 @@ const useAuthStore = create((set) => ({
     try {
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("token_expiration");
 
-      set({ token: null, user: null });
+      // set({ token: null, user: null });
     } catch (error) {
       console.log(error);
     }

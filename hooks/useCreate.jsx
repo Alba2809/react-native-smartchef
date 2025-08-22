@@ -189,6 +189,7 @@ export default function useCreate() {
           createdAt: currentDate.toISOString(),
           updatedAt: currentDate.toISOString(),
           type: "local",
+          isOwner: true,
           user,
         },
         image,
