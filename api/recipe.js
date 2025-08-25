@@ -53,3 +53,20 @@ export const deleteRecipeRequest = async (token, recipeId) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const getRecipesByUserRequest = async ({
+  token,
+  username,
+  page = 1,
+  limit = 10,
+}) =>
+  fetch(
+    `${API_URL}/recipe/user?username=${username}&page=${page}&limit=${limit}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );

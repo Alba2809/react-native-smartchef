@@ -25,6 +25,11 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
   const userText = (recipeUser) =>
     `por ${recipeUser}${recipeUser === localusername ? " (tú)" : ""}`;
 
+  const redirectToUserProfile = useCallback(
+    (username) => router.push(`/profile/${username}`),
+    [router]
+  );
+
   return (
     <View style={styles.card}>
       {/* Imagen con tiempo */}
@@ -39,28 +44,33 @@ const RecipeCard = memo(({ item, localusername = null, showHeart = false }) => {
           gap: 8,
         }}
       >
-        <Image
-          source={{ uri: item?.user?.avatar }}
-          style={{
-            width: 40,
-            height: 40,
-            backgroundColor: COLORS.white,
-            borderRadius: 100,
-          }}
-          transition={500}
-        />
-        <View style={{ flex: 1, flexDirection: "column" }}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text
+        <TouchableOpacity
+          onPress={() => redirectToUserProfile(item.user.username)}
+          style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+        >
+          <Image
+            source={{ uri: item?.user?.avatar }}
             style={{
-              fontSize: 14,
-              color: COLORS.placeholderText,
-              fontWeight: "500",
+              width: 40,
+              height: 40,
+              backgroundColor: COLORS.white,
+              borderRadius: 100,
             }}
-          >
-            {userText(item.user.username)}
-          </Text>
-        </View>
+            transition={500}
+          />
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: COLORS.placeholderText,
+                fontWeight: "500",
+              }}
+            >
+              {userText(item.user.username)}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {showHeart && (
           <View style={styles.heartButton}>

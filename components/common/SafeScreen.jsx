@@ -5,14 +5,16 @@ import COLORS from "../../constants/colors";
 
 export default function SafeScreen({ children }) {
   const insets = useSafeAreaInsets();
-  const notApplyInsets = ["details"];
+  const notApplyInsets = ["details", "profile"];
 
-  const segment = useSegments()[0];
+  const segments = useSegments();
 
   const insetTop = () => {
-    if (notApplyInsets.includes(segment)) return 0;
+    if (notApplyInsets.find((item) => segments.includes(item))) {
+      return 0;
+    }
     return insets.top;
-  }
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insetTop() }]}>

@@ -5,12 +5,12 @@ import useRecipeStore from "../../store/recipeStore";
 
 export default function profile() {
   const { user } = useAuthStore();
-  const { recipesSaved } = useRecipeStore();
+  const { recipesSaved, allRecipes } = useRecipeStore();
   const [userRecipes, setUserRecipes] = useState([]);
 
   useEffect(() => {
     // get the recipes of the user
-    if (user ) {
+    if (user) {
       const recipes = recipesSaved.filter(
         (recipe) => recipe.isOwner || recipe.user?.username === user.username
       );
@@ -19,5 +19,5 @@ export default function profile() {
     }
   }, [recipesSaved]);
 
-  return <ProfileScreen isTheOwner={true} user={user} recipes={userRecipes} />;
+  return <ProfileScreen isTheOwner={true} user={user} recipes={[...allRecipes, ...allRecipes]} />;
 }
