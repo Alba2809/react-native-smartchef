@@ -5,10 +5,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { smallDateFormat } from "../../utils/dateFormat.js";
-import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import COLORS from "../../constants/colors";
@@ -24,19 +24,30 @@ const ProfileScreen = ({
   recipes = [],
 }) => {
   const { logout } = useAuthStore();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const insetTop = useSafeAreaInsets().top;
 
-  const handleLogout = async () => {
+  const confirmLogout = async () => {
     try {
-      setIsLoggingOut(true);
-      await logout();
-      router.replace("/(auth)");
+      Alert.alert(
+        "Cerrar sesión",
+        "¿Estás seguro de que quieres cerrar sesión?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Cerrar sesión",
+            onPress: async () => {
+              await logout();
+              router.replace("/(auth)");
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoggingOut(false);
     }
   };
 
@@ -49,6 +60,8 @@ const ProfileScreen = ({
   const goBack = () => {
     router.back();
   };
+
+  if (!user) return <NonexistedUser />;
 
   return (
     <View
@@ -78,59 +91,52 @@ const ProfileScreen = ({
           </TouchableOpacity>
         </View>
       )}
-      {isLoggingOut ? (
-        <ActivityIndicator size={"large"} color={COLORS.primary} />
-      ) : user ? (
-        <FlatList
-          data={recipes}
-          renderItem={renderRecipeItem}
-          keyExtractor={(item) => item._id.toString()}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={10}
-          contentContainerStyle={{
-            gap: 10,
-            padding: 16,
-            paddingTop: goBackButton ? 0 : insetTop + 16,
-            paddingBottom: 25,
-          }}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.1}
-          ListHeaderComponent={
-            <HeaderComponent
-              user={user}
-              isTheOwner={isTheOwner}
-              handleLogout={handleLogout}
-              isLoggingOut={isLoggingOut}
-              recipesLength={totalRecipes || recipes.length}
-            />
-          }
-          ListFooterComponent={
-            hasMore &&
-            recipes.length > 0 && (
-              <ActivityIndicator
-                size="large"
-                color={COLORS.primary}
-                style={{
-                  alignSelf: "center",
-                }}
-              />
-            )
-          }
-          ListEmptyComponent={
-            <Text
+      <FlatList
+        data={recipes}
+        renderItem={renderRecipeItem}
+        keyExtractor={(item) => item._id.toString()}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        contentContainerStyle={{
+          gap: 10,
+          padding: 16,
+          paddingTop: goBackButton ? 0 : insetTop + 16,
+          paddingBottom: 25,
+        }}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.1}
+        ListHeaderComponent={
+          <HeaderComponent
+            user={user}
+            isTheOwner={isTheOwner}
+            confirmLogout={confirmLogout}
+            recipesLength={totalRecipes || recipes.length}
+          />
+        }
+        ListFooterComponent={
+          hasMore &&
+          recipes.length > 0 && (
+            <ActivityIndicator
+              size="large"
+              color={COLORS.primary}
               style={{
-                fontSize: 15,
-                color: COLORS.textSecondary,
-                paddingHorizontal: 10,
+                alignSelf: "center",
               }}
-            >
-              No se hay resultados...
-            </Text>
-          }
-        />
-      ) : (
-        <NonexistedUser />
-      )}
+            />
+          )
+        }
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 15,
+              color: COLORS.textSecondary,
+              paddingHorizontal: 10,
+            }}
+          >
+            No se hay resultados...
+          </Text>
+        }
+      />
     </View>
   );
 };
@@ -189,8 +195,7 @@ const renderRecipeItem = ({ item }) => {
 const HeaderComponent = ({
   user,
   isTheOwner,
-  handleLogout,
-  isLoggingOut,
+  confirmLogout,
   recipesLength,
 }) => {
   return (
@@ -251,8 +256,7 @@ const HeaderComponent = ({
             elevation: 3,
             shadowColor: COLORS.black,
           }}
-          onPress={handleLogout}
-          disabled={isLoggingOut}
+          onPress={confirmLogout}
         >
           <Ionicons name="log-out-outline" size={24} color="white" />
           <Text style={{ fontSize: 14, color: "white", fontWeight: "500" }}>

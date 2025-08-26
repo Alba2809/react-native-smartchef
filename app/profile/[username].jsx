@@ -34,7 +34,6 @@ const PublicProfile = () => {
       if (pageNum === 1) {
         setUser(data.user);
         setRecipes(data.recipes);
-        console.log(data.recipes)
       } else {
         const uniqueRecipes = Array.from(
           new Set([...recipes, ...data.recipes].map((recipe) => recipe._id))
