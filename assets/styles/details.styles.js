@@ -197,12 +197,12 @@ const styles = StyleSheet.create({
     color: "#2d3748",
   },
   // steps
-  stepsHeader: {
+  listHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  btnReadSteps: {
+  btnReadList: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,

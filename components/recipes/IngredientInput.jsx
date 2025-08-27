@@ -6,6 +6,7 @@ import {
   Buttons as ButtonsStyles,
   Form as FormStyles,
 } from "../../assets/styles/create/create.styles";
+import { units } from "../../utils/ingredients";
 import DropDownPicker from "react-native-dropdown-picker";
 import COLORS from "../../constants/colors";
 import Toast from "react-native-toast-message";
@@ -15,23 +16,7 @@ export default function IngredientInput({ handleAddIngredient }) {
   const [amount, setAmount] = useState(0);
   const [unit, setUnit] = useState(null);
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    { label: "gramos", value: "g" },
-    { label: "kilogramos", value: "kg" },
-    { label: "mililitros", value: "ml" },
-    { label: "litros", value: "l" },
-    { label: "piezas", value: "pz" },
-    { label: "tazas", value: "taza" },
-    { label: "cucharadas", value: "cda" },
-    { label: "cucharaditas", value: "cdta" },
-    { label: "rebanadas", value: "rebanada" },
-    { label: "dientes", value: "diente" },
-    { label: "hojas", value: "hoja" },
-    { label: "ramas", value: "rama" },
-    { label: "pellizcos", value: "pellizco" },
-    { label: "pizcas", value: "pizca" },
-    { label: "unidad", value: "u" },
-  ]);
+  const [items, setItems] = useState(units);
 
   const saveIngredient = () => {
     /* Validate inputs */

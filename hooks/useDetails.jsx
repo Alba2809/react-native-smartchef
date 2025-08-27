@@ -20,6 +20,7 @@ export default function useDetails({ id }) {
     outputRange: ["transparent", "white"],
     extrapolate: "clamp",
   });
+  const bottomSheetRef = useRef(null);
 
   const limitSteps = 3;
 
@@ -334,5 +335,7 @@ export default function useDetails({ id }) {
     confirmDelete,
     handleDelete,
     deleting,
+
+    bottomSheetRef,
   };
 }

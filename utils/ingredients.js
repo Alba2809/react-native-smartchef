@@ -1,0 +1,18 @@
+export const units = [
+  { label: "gramos", value: "g" },
+  { label: "kilogramos", value: "kg" },
+  { label: "mililitros", value: "ml" },
+  { label: "litros", value: "l" },
+  { label: "pieza", value: "pz" },
+  { label: "taza", value: "tz" },
+  { label: "cucharada", value: "cda" },
+  { label: "cucharadita", value: "cdta" },
+  { label: "rebanada", value: "reb" },
+  { label: "diente", value: "dte" },
+  { label: "hoja", value: "hja" },
+  { label: "ramita", value: "ram" },
+  { label: "pieza chica", value: "pzc" },
+  { label: "pizca", value: "piz" },
+  { label: "unidad", value: "u" },
+  { label: "gotas", value: "ag" },
+];

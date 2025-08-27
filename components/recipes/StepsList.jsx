@@ -1,15 +1,19 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Steps as StepsStyles, Form as FormStyles } from "../../assets/styles/create/create.styles";
+import {
+  Steps as StepsStyles,
+  Form as FormStyles,
+} from "../../assets/styles/create/create.styles";
 import COLORS from "../../constants/colors";
 import ExpandableText from "../common/ExpandableText";
 
-export default function StepsList({ steps = [], handleRemoveStep, playStep = false }) {
+export default function StepsList({
+  steps = [],
+  handleRemoveStep,
+  playStep = false,
+  speakStep = null,
+}) {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const onToggle = (index) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
@@ -39,7 +43,11 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
             </Text>
 
             <View style={[StepsStyles.stepRightDuration, { gap: 12 }]}>
-              <Text style={StepsStyles.stepDurationText}>{step.duration} min</Text>
+              {step.duration != null && step.duration > 0 && (
+                <Text style={StepsStyles.stepDurationText}>
+                  {String(step.duration)} min
+                </Text>
+              )}
 
               {handleRemoveStep && (
                 <TouchableOpacity onPress={() => handleRemoveStep(index)}>
@@ -51,17 +59,11 @@ export default function StepsList({ steps = [], handleRemoveStep, playStep = fal
                 </TouchableOpacity>
               )}
 
-              {
-                playStep && (
-                  <TouchableOpacity>
-                    <Ionicons
-                      name="play"
-                      size={20}
-                      color="#718096"
-                    />
-                  </TouchableOpacity>
-                )
-              }
+              {playStep && speakStep && (
+                <TouchableOpacity onPress={() => speakStep(step)}>
+                  <Ionicons name="play" size={20} color="#718096" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 

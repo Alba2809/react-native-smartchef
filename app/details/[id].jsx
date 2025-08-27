@@ -1,4 +1,3 @@
-
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -22,6 +21,8 @@ import useBottomSheet from "../../hooks/useBottomSheet";
 import useDetails from "../../hooks/useDetails";
 import CategoriesList from "../../components/recipes/CategoriesList";
 import useCategoryStore from "../../store/categoryStore";
+import useSpeech from "../../hooks/useSpeech";
+import useSettingsStore from "../../store/settingsStore";
 
 const BottomSheetViews = {
   INGREDIENTS: "INGREDIENTS",
@@ -37,14 +38,19 @@ const BottomSheetConfig = {
   [BottomSheetViews.STEPS]: {
     title: "Pasos de preparación",
     snapPoints: ["70%"],
-    content: (props) => <StepsList steps={props.steps} playStep={true} />,
+    content: (props) => (
+      <StepsList steps={props.steps} playStep={true} speakStep={props.speakStep} />
+    ),
   },
 };
 
 const DetailsScreen = () => {
   const { id } = useLocalSearchParams();
-  const insets = useSafeAreaInsets();
   const { categories } = useCategoryStore();
+  const insets = useSafeAreaInsets();
+
+  const { speakFullRecipe, speakSteps, speakStep, speakIngredients } =
+    useSpeech();
 
   const {
     scrollY,
@@ -64,23 +70,23 @@ const DetailsScreen = () => {
 
     confirmDelete,
     deleting,
+
+    bottomSheetRef,
   } = useDetails({
     id,
   });
 
-  const {
-    handlePresentModalPress,
-    bottomSheetRef,
-    currentBsConfig,
-    bottomSheetContent,
-  } = useBottomSheet({
-    BottomSheetViews,
-    BottomSheetConfig,
-    dataProps: {
-      ingredients: recipe?.ingredients,
-      steps: recipe?.steps,
-    },
-  });
+  const { handlePresentModalPress, currentBsConfig, bottomSheetContent } =
+    useBottomSheet({
+      bottomSheetRef,
+      BottomSheetViews,
+      BottomSheetConfig,
+      dataProps: {
+        ingredients: recipe?.ingredients,
+        steps: recipe?.steps,
+        speakStep,
+      },
+    });
 
   useEffect(() => {
     getRecipe();
@@ -95,7 +101,7 @@ const DetailsScreen = () => {
       style={[
         styles.container,
         {
-          paddingBottom: insets.bottom + 5,
+          paddingBottom: insets.bottom,
         },
       ]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -143,6 +149,7 @@ const DetailsScreen = () => {
           <Animated.ScrollView
             contentContainerStyle={{
               gap: 20,
+              paddingBottom: 85,
             }}
             style={[styles.scrollView, { paddingTop: insets.top + 56 }]}
             onScroll={Animated.event(
@@ -151,15 +158,6 @@ const DetailsScreen = () => {
             )}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
-            /* TODO: fix the refresh control */
-            /* refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={refreshRecipe}
-                tintColor={COLORS.primary}
-                colors={[COLORS.primary]}
-              />
-            } */
           >
             {/* Basic info Card */}
             <View style={styles.basicInfoContainer}>
@@ -182,7 +180,10 @@ const DetailsScreen = () => {
                   </View>
                 </View>
                 {/* Read the text */}
-                <TouchableOpacity style={styles.btnPlayRecipe}>
+                <TouchableOpacity
+                  style={styles.btnPlayRecipe}
+                  onPress={() => speakFullRecipe(recipe)}
+                >
                   <Ionicons
                     name="volume-high"
                     size={20}
@@ -273,7 +274,9 @@ const DetailsScreen = () => {
                         paddingVertical: 6,
                         paddingHorizontal: 16,
                         borderRadius: 10,
-                        backgroundColor: recipe.uploaded ? "lightgray" : COLORS.secondary,
+                        backgroundColor: recipe.uploaded
+                          ? "lightgray"
+                          : COLORS.secondary,
                       }}
                       onPress={uploadRecipe}
                       disabled={sending || recipe.uploaded}
@@ -295,9 +298,22 @@ const DetailsScreen = () => {
 
             {/* Ingredients */}
             <View style={styles.itemsContainer}>
-              <Text style={styles.title}>
-                Ingredientes ({recipe.ingredients.length})
-              </Text>
+              <View style={styles.listHeader}>
+                <Text style={styles.title}>
+                  Ingredientes ({recipe.steps.length})
+                </Text>
+                {/* Read ingredients */}
+                <TouchableOpacity
+                  style={styles.btnReadList}
+                  onPress={() => speakIngredients(recipe.ingredients)}
+                >
+                  <Ionicons
+                    name="volume-high"
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                </TouchableOpacity>
+              </View>
 
               <View style={styles.itemsList}>
                 {!loading &&
@@ -338,12 +354,15 @@ const DetailsScreen = () => {
 
             {/* Steps */}
             <View style={styles.itemsContainer}>
-              <View style={styles.stepsHeader}>
+              <View style={styles.listHeader}>
                 <Text style={styles.title}>
                   Preparación ({recipe.steps.length})
                 </Text>
                 {/* Read steps */}
-                <TouchableOpacity style={styles.btnReadSteps}>
+                <TouchableOpacity
+                  style={styles.btnReadList}
+                  onPress={() => speakSteps(recipe.steps)}
+                >
                   <Ionicons
                     name="volume-high"
                     size={20}
@@ -363,13 +382,19 @@ const DetailsScreen = () => {
                         </View>
                         <View style={styles.stepDurationContainer}>
                           {/* Duration */}
-                          <View style={styles.stepDuration}>
-                            <Text style={styles.stepDurationText}>
-                              {step.duration} min
-                            </Text>
-                          </View>
+                          {step.duration && (
+                            <View style={styles.stepDuration}>
+                              <Text style={styles.stepDurationText}>
+                                {step.duration} min
+                              </Text>
+                            </View>
+                          )}
                           {/* Play this step */}
-                          <Ionicons name="play" size={20} color="#718096" />
+                          {recipe.steps.length < 4 && (
+                            <TouchableOpacity onPress={() => speakStep(step)}>
+                              <Ionicons name="play" size={20} color="#718096" />
+                            </TouchableOpacity>
+                          )}
                         </View>
                       </View>
 
