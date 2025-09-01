@@ -1,50 +1,130 @@
-# Welcome to your Expo app 👋
+# 🍳 Recipe App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada con **React Native (Expo)** y **Node.js/Express** para gestionar recetas de cocina.  
+Permite a los usuarios explorar, guardar, escuchar y compartir recetas de manera sencilla.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Características principales
 
-   ```bash
-   npm install
-   ```
+- 🔐 **Autenticación segura** con JWT y almacenamiento en `AsyncStorage`.
+- 👤 **Perfiles de usuario**: consulta de recetas creadas por cada usuario.
+- 📑 **Gestión de recetas**: creación, listado, filtrado y paginación infinita.
+- ❤️ **Favoritos**: sistema de favoritos persistente con `zustand + persist`.
+- 🔊 **Narración de recetas** con **Text-to-Speech**:
+  - Reproducir receta completa (título, descripción, ingredientes y pasos).
+  - Reproducir solo los pasos.
+  - Reproducir un paso individual.
+  - Controles de **pausa/reanudar** y **detener**.
+- ⚙️ **Configuraciones personalizables** (por ejemplo, tomar en cuenta la duración de los pasos).
+- 📱 **UI optimizada**: componentes reutilizables, diseño limpio y navegación fluida.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Tecnologías principales utilizadas
 
-In the output, you'll find options to open the app in a
+### Frontend
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [React Native](https://reactnative.dev/) (con [Expo](https://expo.dev/))
+- [Zustand](https://github.com/pmndrs/zustand) (manejo de estado global)
+- [AsyncStorage](https://react-native-async-storage.github.io/async-storage/) (persistencia local)
+- [Expo Speech](https://docs.expo.dev/versions/latest/sdk/speech/) (narración TTS)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Backend
 
-## Get a fresh project
+- [Node.js](https://nodejs.org/)
+- [Express](https://expressjs.com/)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
 
-When you're ready, run:
+---
+
+## 📷 Capturas de pantalla
+
+<img src="./assets/images/screenshots/Login.webp" width="200" /> <img src="./assets/images/screenshots/Home.webp" width="200" /> 
+<img src="./assets/images/screenshots/Create.webp" width="200" /> <img src="./assets/images/screenshots/Details.webp" width="200" />
+<img src="./assets/images/screenshots/Search.webp" width="200" /> <img src="./assets/images/screenshots/Profile.webp" width="200" />
+
+---
+
+## 🚀 Instalación y ejecución
+
+### Backend
+
+1. Descargar el proyecto desde el [repositorio](https://github.com/Alba2809/react-native-smartchef-api).
 
 ```bash
-npm run reset-project
+git clone https://github.com/Alba2809/react-native-smartchef-api
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Instalar las dependencias.
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Iniciar el servidor.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run start
+```
 
-## Join the community
+### Frontend
 
-Join our community of developers creating universal apps.
+1. Descargar el proyecto desde el repositorio.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+git clone https://github.com/joseluisgs/SmartChef_ReactNative.git
+```
+
+2. Instalar las dependencias.
+
+```bash
+cd frontend
+npm install
+```
+
+3. Iniciar el proyecto. (android)
+
+```bash
+expo start --android
+```
+
+---
+
+## Variables de entorno
+
+En el `backend`, crear un archivo `.env` con las siguientes variables:
+
+```bash
+MONGO_URL=...
+GEMINAI_KEY=...
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
+
+En el `frontend`, configurar la variable de la API `API_URL`, ubicada en `constants/api.js`:
+
+```bash
+API_URL=<url-del-backend>
+```
+
+---
+
+## 📌 Próximas mejoras
+
+- 📲 Notificaciones push para recordatorios de recetas.
+- 🌎 Multilenguaje para la narración de recetas.
+- 🖼️ Soporte para imágenes y videos en los pasos.
+- 🔎 Búsqueda avanzada por ingredientes y categorías.
+- 📱 Mejoras en la experiencia de dispositivos móviles.
+- 🤖 Agregar funcionalidades adicionales a la IA.
+- 📝 Verificación de correos.
+- ⚙️ Agregar opciones de configuración.
+
+---
+
+## 📝 Licencia
+
+Este proyecto está licenciado bajo la licencia MIT.
